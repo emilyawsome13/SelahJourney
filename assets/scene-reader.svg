@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" role="img" aria-label="Bible reader scene">
+  <defs>
+    <linearGradient id="readerSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f6d69a"/>
+      <stop offset="42%" stop-color="#c57c48"/>
+      <stop offset="100%" stop-color="#2d1d18"/>
+    </linearGradient>
+    <radialGradient id="readerSun" cx="44%" cy="23%" r="34%">
+      <stop offset="0%" stop-color="#fff8d8"/>
+      <stop offset="100%" stop-color="#fff8d8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="readerGround" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6b4731"/>
+      <stop offset="100%" stop-color="#1e1410"/>
+    </linearGradient>
+    <filter id="readerShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="22" flood-color="#1b100c" flood-opacity="0.38"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="960" fill="url(#readerSky)"/>
+  <rect width="1600" height="960" fill="url(#readerSun)"/>
+
+  <path d="M0 596 C170 520 334 520 520 576 C706 634 906 618 1108 550 C1268 496 1418 468 1600 486 L1600 960 L0 960 Z" fill="#6d4531" opacity="0.62"/>
+  <path d="M0 678 C176 598 384 606 612 680 C838 752 1014 752 1260 676 C1388 636 1504 618 1600 620 L1600 960 L0 960 Z" fill="url(#readerGround)"/>
+
+  <g opacity="0.48" stroke="#ffe5a5" stroke-linecap="round">
+    <path d="M708 46 L708 324" stroke-width="12"/>
+    <path d="M576 114 L844 244" stroke-width="10"/>
+    <path d="M842 108 L580 248" stroke-width="10"/>
+    <path d="M448 196 L972 196" stroke-width="8"/>
+  </g>
+
+  <g transform="translate(1018 252)" fill="#261712" opacity="0.9">
+    <rect x="90" y="0" width="34" height="210" rx="12"/>
+    <rect x="32" y="78" width="150" height="34" rx="12"/>
+  </g>
+
+  <g transform="translate(122 646)" filter="url(#readerShadow)">
+    <path d="M0 80 C92 34 230 12 430 8 C640 4 828 28 954 90 L900 254 C774 224 610 206 430 206 C258 206 124 224 36 252 Z" fill="#a76d37"/>
+    <path d="M46 96 C172 52 286 42 430 42 C572 42 708 54 850 102 L812 230 C694 206 572 190 430 190 C286 190 168 204 72 226 Z" fill="#f4dfb2"/>
+    <path d="M430 42 L430 188" stroke="#8e5727" stroke-width="14"/>
+    <path d="M420 58 C312 54 212 58 124 76" stroke="#c8ab77" stroke-width="5" opacity="0.74"/>
+    <path d="M444 58 C552 54 652 58 740 76" stroke="#c8ab77" stroke-width="5" opacity="0.74"/>
+    <path d="M416 70 C304 72 224 80 154 96" stroke="#dfc89b" stroke-width="3" opacity="0.66"/>
+    <path d="M448 70 C560 72 640 80 710 96" stroke="#dfc89b" stroke-width="3" opacity="0.66"/>
+  </g>
+
+  <g transform="translate(168 548)" opacity="0.56">
+    <path d="M0 210 C112 164 212 138 314 132 C448 124 530 154 638 214" fill="none" stroke="#f3d08b" stroke-width="8" stroke-dasharray="10 18" stroke-linecap="round"/>
+    <circle cx="314" cy="132" r="10" fill="#f3d08b"/>
+    <circle cx="638" cy="214" r="10" fill="#f3d08b"/>
+  </g>
+
+  <g transform="translate(1140 686)" opacity="0.82">
+    <circle cx="0" cy="0" r="44" fill="#f5d28c" opacity="0.24"/>
+    <path d="M0 -70 L16 -20 L68 0 L16 20 L0 70 L-16 20 L-68 0 L-16 -20 Z" fill="#f5d28c" opacity="0.5"/>
+  </g>
+</svg>

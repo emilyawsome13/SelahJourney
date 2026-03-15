@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Selah Journey logo">
+  <defs>
+    <linearGradient id="selahJourneyGlow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f3d793"/>
+      <stop offset="100%" stop-color="#c78442"/>
+    </linearGradient>
+    <linearGradient id="selahJourneyBook" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#24353b"/>
+      <stop offset="100%" stop-color="#122022"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="18" fill="#f6efe1"/>
+  <rect x="10" y="10" width="44" height="44" rx="14" fill="url(#selahJourneyBook)"/>
+  <path d="M20 45V22.5c4.2-2.4 8.5-3.6 12.9-3.6 3.6 0 7 0.8 11.1 2.7V44c-4.2-1.9-7.6-2.7-11.1-2.7-4.4 0-8.7 1.2-12.9 3.7Z" fill="none" stroke="url(#selahJourneyGlow)" stroke-width="3.4" stroke-linejoin="round"/>
+  <path d="M32 20v22.2" stroke="url(#selahJourneyGlow)" stroke-width="3.4" stroke-linecap="round"/>
+  <path d="M27.8 26.8c1.3 1.2 2.7 1.7 4.2 1.7 1.8 0 3.1-.7 4.4-2" fill="none" stroke="#f8edd8" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="32" cy="16.5" r="3.2" fill="#f3d793"/>
+</svg>

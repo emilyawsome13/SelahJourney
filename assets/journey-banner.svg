@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 420" role="img" aria-label="Journey banner art">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f6d79a"/>
+      <stop offset="55%" stop-color="#bb7545"/>
+      <stop offset="100%" stop-color="#44281d"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="30%" r="34%">
+      <stop offset="0%" stop-color="#fff6d0"/>
+      <stop offset="100%" stop-color="#fff6d0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1400" height="420" fill="url(#sky)"/>
+  <rect width="1400" height="420" fill="url(#glow)"/>
+  <path d="M0 264 C214 222 382 222 560 270 C766 328 970 316 1400 228 L1400 420 L0 420 Z" fill="#5e3d2a" opacity="0.7"/>
+  <path d="M0 322 C190 276 384 300 572 338 C790 382 1024 366 1400 302 L1400 420 L0 420 Z" fill="#261913"/>
+  <g opacity="0.5" stroke="#ffe39d" stroke-width="8" stroke-linecap="round">
+    <path d="M700 46 L700 214"/>
+    <path d="M614 92 L786 168"/>
+    <path d="M786 92 L614 168"/>
+    <path d="M510 148 L890 148"/>
+  </g>
+  <g transform="translate(230 114)">
+    <path d="M0 136 C98 56 220 18 344 6 C376 2 410 0 446 0 C430 54 426 108 432 162 C352 148 266 148 192 164 C126 178 64 204 0 242 Z" fill="#f5e7c4" opacity="0.9"/>
+    <path d="M10 142 C114 118 204 116 304 126" stroke="#8a5b31" stroke-width="6" fill="none" opacity="0.5"/>
+    <path d="M336 0 C414 22 482 70 540 138 C572 176 586 208 590 242 C504 208 424 190 330 186 C326 112 328 64 336 0 Z" fill="#f0d4a2" opacity="0.9"/>
+  </g>
+</svg>

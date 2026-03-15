@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Continue study art">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5d08a"/>
+      <stop offset="45%" stop-color="#b46b3f"/>
+      <stop offset="100%" stop-color="#2d1d17"/>
+    </linearGradient>
+    <radialGradient id="lampGlow" cx="18%" cy="62%" r="24%">
+      <stop offset="0%" stop-color="#fff4c8"/>
+      <stop offset="100%" stop-color="#fff4c8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="620" fill="url(#bg)"/>
+  <rect width="900" height="620" fill="url(#lampGlow)"/>
+  <rect y="472" width="900" height="148" fill="#261913"/>
+  <path d="M0 502 C152 444 332 438 468 470 C636 510 742 484 900 428 L900 620 L0 620 Z" fill="#3b241b" opacity="0.84"/>
+  <g transform="translate(92 260)">
+    <rect x="22" y="44" width="76" height="132" rx="24" fill="#3c271c" stroke="#c88c49" stroke-width="8"/>
+    <rect x="34" y="0" width="52" height="52" rx="18" fill="#3c271c" stroke="#c88c49" stroke-width="8"/>
+    <rect x="42" y="28" width="36" height="108" rx="18" fill="#ffd98d"/>
+  </g>
+  <g transform="translate(256 364)">
+    <path d="M0 34 C88 0 206 -12 340 -4 C478 4 606 24 670 62 L620 182 C544 162 438 154 338 154 C228 154 126 166 40 194 Z" fill="#bd8348"/>
+    <path d="M46 54 C122 28 214 22 334 28 C452 34 544 46 612 74 L584 170 C514 152 430 146 338 146 C236 146 152 154 72 176 Z" fill="#f6e3bb"/>
+    <path d="M336 28 L336 146" stroke="#a86c34" stroke-width="10"/>
+    <path d="M326 44 C256 40 188 40 126 50" stroke="#c9b07f" stroke-width="4" opacity="0.6"/>
+    <path d="M344 44 C414 40 482 40 544 50" stroke="#c9b07f" stroke-width="4" opacity="0.6"/>
+  </g>
+  <path d="M612 210 C668 202 722 224 760 268 C782 294 790 316 790 346 C716 326 674 324 594 334 C600 280 606 248 612 210 Z" fill="#f4e4bf" opacity="0.92"/>
+  <path d="M620 214 C660 248 678 284 684 332" stroke="#80512d" stroke-width="6" fill="none"/>
+</svg>

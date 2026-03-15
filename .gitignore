@@ -1,0 +1,10 @@
+.env
+data/users.json
+data/*.log
+data/*.pid
+data/public-url.txt
+data/lan-url.txt
+node_modules/
+analysis/
+Seah/
+.DS_Store

@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Selah Journey</title>
+  <meta name="description" content="Selah Journey is a local Bible study workspace with live Scripture APIs, guided journeys, verse tools, and a sync-ready study desk.">
+  <link rel="icon" type="image/svg+xml" href="assets/selah-journey-mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="view-home">
+  <script>
+    (function () {
+      function readPreference(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (error) {
+          return fallback;
+        }
+      }
+
+      document.body.dataset.theme = ["sepia", "light", "dark"].includes(readPreference("kingsBibleCompass.theme", "sepia"))
+        ? readPreference("kingsBibleCompass.theme", "sepia")
+        : "sepia";
+      document.body.dataset.readerSize = ["compact", "comfortable", "large"].includes(readPreference("kingsBibleCompass.readerTextSize", "comfortable"))
+        ? readPreference("kingsBibleCompass.readerTextSize", "comfortable")
+        : "comfortable";
+      document.body.dataset.readerWidth = ["narrow", "standard", "wide"].includes(readPreference("kingsBibleCompass.readerWidth", "standard"))
+        ? readPreference("kingsBibleCompass.readerWidth", "standard")
+        : "standard";
+      document.body.dataset.showVerseNumbers = readPreference("kingsBibleCompass.showVerseNumbers", true) === false ? "false" : "true";
+      document.body.dataset.motion = ["enhanced", "subtle", "reduced"].includes(readPreference("kingsBibleCompass.motion", "enhanced"))
+        ? readPreference("kingsBibleCompass.motion", "enhanced")
+        : "enhanced";
+      document.documentElement.lang = String(readPreference("kingsBibleCompass.readingLanguage", "eng")).slice(0, 2) || "en";
+
+      const panel = new URLSearchParams(window.location.search).get("panel");
+      if (panel && panel !== "home") {
+        document.body.classList.remove("view-home");
+        document.body.classList.add("view-focus");
+      }
+    })();
+  </script>
+  <div class="app-shell">
+    <div class="app-topbar">
+      <button type="button" class="brand-badge nav-chip" data-nav-target="home" aria-label="Open Selah Journey home">
+        <span class="brand-mark" id="appBrandMark" aria-hidden="true">
+          <img src="assets/selah-journey-mark.svg" alt="">
+        </span>
+        <span class="brand-copy">
+          <strong>Selah Journey</strong>
+          <span>Bible reading and study workspace</span>
+        </span>
+      </button>
+
+      <div class="account-corner">
+        <button type="button" class="account-corner-button nav-chip" id="accountCornerButton" data-nav-target="account" aria-label="Open account">
+          <span class="account-corner-avatar" id="accountCornerAvatar" aria-hidden="true">SJ</span>
+          <span class="account-corner-copy">
+            <strong id="accountCornerLabel">Account</strong>
+            <span id="accountCornerMeta">Guest mode</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div id="homeLanding" class="home-landing">
+      <header class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">Bible Study Workspace</div>
+          <h1 id="heroTitle">Selah Journey</h1>
+          <p id="heroSubtitle" class="hero-subtitle">Loading the saved HTML snapshots and wiring in free study APIs.</p>
+          <div class="hero-actions">
+            <button type="button" class="hero-button" data-nav-target="read">Open Reader</button>
+            <button type="button" class="hero-button hero-button-muted" data-nav-target="journeys">Open Journeys</button>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="hero-mark" id="heroMark" aria-hidden="true"></div>
+          <div class="hero-stats" id="heroStats"></div>
+        </div>
+      </header>
+
+      <nav class="top-nav" aria-label="Bible app sections">
+        <button type="button" class="nav-chip" data-nav-target="read">Read</button>
+        <button type="button" class="nav-chip" data-nav-target="browse">Browse</button>
+        <button type="button" class="nav-chip" data-nav-target="journeys">Journeys</button>
+        <button type="button" class="nav-chip" data-nav-target="desk">Study Desk</button>
+        <button type="button" class="nav-chip" data-nav-target="search">Search</button>
+        <button type="button" class="nav-chip" data-nav-target="dictionary">Dictionary</button>
+        <button type="button" class="nav-chip" data-nav-target="concordance">Concordance</button>
+        <button type="button" class="nav-chip" data-nav-target="atlas">Atlas</button>
+        <button type="button" class="nav-chip" data-nav-target="library">Library</button>
+      </nav>
+
+      <section class="spotlight-grid" aria-label="Study highlights">
+        <article class="spotlight-card spotlight-card-continue">
+          <div class="panel-kicker">Continue Study</div>
+          <h3 id="continueReference">Loading your last passage...</h3>
+          <p id="continueSummary" class="spotlight-copy">Your last reading position appears here so you can jump back in immediately.</p>
+          <div class="spotlight-actions">
+            <button type="button" class="hero-button" id="continueStudyButton">Open passage</button>
+            <span class="mini-meta" id="continueMeta">Local progress</span>
+          </div>
+        </article>
+
+        <article class="spotlight-card spotlight-card-daily">
+          <div class="panel-kicker">Daily Focus</div>
+          <h3 id="dailyFocusReference">Loading daily focus...</h3>
+          <p id="dailyFocusPrayer" class="spotlight-copy">A rotating daily study focus is chosen locally from curated passages.</p>
+          <div class="spotlight-actions">
+            <button type="button" class="hero-button" id="dailyFocusButton">Open today&apos;s verse</button>
+            <span class="mini-meta" id="dailyFocusMeta">Daily rhythm</span>
+          </div>
+        </article>
+
+        <article class="spotlight-card spotlight-card-journey">
+          <div class="panel-kicker">Guided Journey</div>
+          <h3 id="activeJourneyTitle">Loading active journey...</h3>
+          <p id="activeJourneySummary" class="spotlight-copy">Structured reading paths help you study whole movements of Scripture instead of isolated verses.</p>
+          <div class="spotlight-actions">
+            <button type="button" class="hero-button" id="openJourneyButton">Open journey</button>
+            <span class="mini-meta" id="activeJourneyMeta">0% complete</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="scene-grid" aria-label="Bible study scenes">
+        <article class="scene-card scene-card-reader">
+          <div class="scene-card-copy">
+            <div class="panel-kicker">Reader Focus</div>
+            <h3>Read in the passage and keep the context open.</h3>
+            <p>Stay inside the chapter while commentary, cross references, and verse notes remain in the same study surface.</p>
+            <div class="scene-actions">
+              <button type="button" class="hero-button" data-nav-target="read">Open reader</button>
+              <span class="mini-meta">Reader | Commentary | Cross refs</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene-card scene-card-journeys">
+          <div class="scene-card-copy">
+            <div class="panel-kicker">Guided Journeys</div>
+            <h3>Trace covenant, wisdom, exile, gospel, and restoration as connected arcs.</h3>
+            <p>Follow curated reading paths with prompts so you study movements of Scripture instead of isolated verses only.</p>
+            <div class="scene-actions">
+              <button type="button" class="hero-button" data-nav-target="journeys">Open journeys</button>
+              <span class="mini-meta">Journeys | Progress | Prompts</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene-card scene-card-desk">
+          <div class="scene-card-copy">
+            <div class="panel-kicker">Study Desk</div>
+            <h3>Turn reading into retained study with local notes, saved searches, and prayer.</h3>
+            <p>Keep questions, outlines, bookmarks, and prayer responses in one local-first workspace that remembers where you stopped.</p>
+            <div class="scene-actions">
+              <button type="button" class="hero-button" data-nav-target="desk">Open desk</button>
+              <span class="mini-meta">Notes | Saved searches | Prayer</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="scene-card scene-card-tools">
+          <div class="scene-card-copy">
+            <div class="panel-kicker">Word And Place Study</div>
+            <h3>Move from the verse into definitions, concordance hits, and place context.</h3>
+            <p>Keep study grounded in the text while using word studies, atlas notes, and search tools to widen the frame around a passage.</p>
+            <div class="scene-actions">
+              <button type="button" class="hero-button" data-nav-target="dictionary">Word study</button>
+              <button type="button" class="hero-button hero-button-muted" data-nav-target="atlas">Place study</button>
+            </div>
+            <div class="mini-meta">Dictionary | Concordance | Atlas</div>
+          </div>
+        </article>
+      </section>
+    </div>
+
+    <nav class="focus-nav" aria-label="Focused study sections">
+      <button type="button" class="nav-chip is-active" data-nav-target="home">Home</button>
+      <button type="button" class="nav-chip" data-nav-target="read">Read</button>
+      <button type="button" class="nav-chip" data-nav-target="browse">Browse</button>
+      <button type="button" class="nav-chip" data-nav-target="journeys">Journeys</button>
+      <button type="button" class="nav-chip" data-nav-target="desk">Study Desk</button>
+      <button type="button" class="nav-chip" data-nav-target="search">Search</button>
+      <button type="button" class="nav-chip" data-nav-target="dictionary">Dictionary</button>
+      <button type="button" class="nav-chip" data-nav-target="concordance">Concordance</button>
+      <button type="button" class="nav-chip" data-nav-target="atlas">Atlas</button>
+      <button type="button" class="nav-chip" data-nav-target="library">Library</button>
+    </nav>
+
+    <main id="workspace" class="workspace">
+      <section class="panel is-active" data-panel="read">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Live Reader</div>
+            <h2>Chapter Reader</h2>
+          </div>
+          <div class="status-pill" id="readerStatus">Waiting for snapshot data...</div>
+        </div>
+
+        <div class="controls-card">
+          <div class="controls-grid">
+            <label class="field">
+              <span>Translation</span>
+              <select id="translationSelect"></select>
+            </label>
+            <label class="field">
+              <span>Book</span>
+              <select id="bookSelect"></select>
+            </label>
+            <label class="field">
+              <span>Chapter</span>
+              <select id="chapterSelect"></select>
+            </label>
+            <label class="field">
+              <span>Commentary</span>
+              <select id="commentarySelect"></select>
+            </label>
+          </div>
+          <div class="reader-settings-grid">
+            <label class="field">
+              <span>Language</span>
+              <select id="readerLanguageSelect"></select>
+            </label>
+            <label class="field">
+              <span>Reader view</span>
+              <select id="readerDisplayModeSelect">
+                <option value="study">Study view</option>
+                <option value="simple">Simple book</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Theme</span>
+              <select id="readerThemeSelect">
+                <option value="sepia">Sepia</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Text Size</span>
+              <select id="readerTextSizeSelect">
+                <option value="compact">Compact</option>
+                <option value="comfortable">Comfortable</option>
+                <option value="large">Large</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Motion</span>
+              <select id="readerMotionSelect">
+                <option value="enhanced">Enhanced</option>
+                <option value="subtle">Subtle</option>
+                <option value="reduced">Reduced</option>
+              </select>
+            </label>
+          </div>
+          <div class="reader-settings-meta">
+            <span class="mini-meta" id="readerPreferenceMeta">Saved locally for this browser.</span>
+          </div>
+          <div class="reader-actions">
+            <button type="button" class="ghost-button" id="prevChapterButton">Previous</button>
+            <button type="button" class="ghost-button" id="nextChapterButton">Next</button>
+            <button type="button" class="ghost-button" id="randomVerseButton">Focus a Verse</button>
+            <button type="button" class="ghost-button" id="readerFocusToggleButton">Focus Mode</button>
+          </div>
+        </div>
+
+        <div class="reader-layout">
+          <article class="reader-card">
+            <div class="reader-heading">
+              <div>
+                <div class="panel-kicker" id="chapterMeta">Genesis 1</div>
+                <h3 id="chapterTitle">Loading chapter...</h3>
+              </div>
+              <div class="chapter-badges">
+                <span class="badge" id="chapterSourceBadge">Live API</span>
+                <span class="badge" id="chapterVerseCountBadge">0 verses</span>
+              </div>
+            </div>
+            <div id="chapterContent" class="chapter-content" aria-live="polite"></div>
+          </article>
+
+          <aside class="study-card">
+            <div class="study-block focus-study-block" id="focusStudyBlock">
+              <div class="panel-kicker">Focus Verse</div>
+              <h3 id="focusReference">Choose a verse</h3>
+              <div id="focusVerseText" class="focus-text">Verse study tools appear here when you select a verse.</div>
+              <div class="focus-highlight-row">
+                <div id="focusHighlightMeta" class="mini-meta">No saved highlight</div>
+                <div id="focusHighlightPalette" class="highlight-palette" role="group" aria-label="Highlight the focused verse">
+                  <button type="button" class="highlight-swatch" data-highlight-tone="gold" aria-label="Apply gold highlight" title="Gold highlight"></button>
+                  <button type="button" class="highlight-swatch" data-highlight-tone="olive" aria-label="Apply olive highlight" title="Olive highlight"></button>
+                  <button type="button" class="highlight-swatch" data-highlight-tone="rose" aria-label="Apply rose highlight" title="Rose highlight"></button>
+                </div>
+                <button type="button" class="ghost-button" id="clearHighlightButton" disabled>Clear highlight</button>
+              </div>
+              <div class="focus-actions">
+                <button type="button" class="ghost-button" id="bookmarkButton" disabled>Bookmark</button>
+                <button type="button" class="ghost-button" id="verseAiButton" disabled>Ask AI</button>
+              </div>
+            </div>
+
+            <div class="study-block">
+              <div class="study-block-head">
+                <h4>Translation Compare</h4>
+                <span class="mini-meta" id="compareVerseMeta">Pick a verse to compare.</span>
+              </div>
+              <label class="field">
+                <span>Compare with</span>
+                <select id="compareTranslationSelect"></select>
+              </label>
+              <div id="compareVerseText" class="study-scroll muted-copy">Select a verse to compare how another translation renders it.</div>
+            </div>
+
+            <div class="study-block">
+              <div class="study-block-head">
+                <h4>Commentary</h4>
+                <span class="mini-meta" id="commentaryMeta">No verse selected</span>
+              </div>
+              <div id="commentaryContent" class="study-scroll muted-copy">Select a verse to load commentary notes.</div>
+            </div>
+
+            <div class="study-block">
+              <div class="study-block-head">
+                <h4>Cross References</h4>
+                <span class="mini-meta" id="crossRefMeta">0 links</span>
+              </div>
+              <div id="crossRefList" class="cross-ref-list muted-copy">Cross references appear here for the current verse.</div>
+            </div>
+
+            <div class="study-block">
+              <div class="study-block-head">
+                <h4>Journal Note</h4>
+                <span class="mini-meta" id="noteSaveMeta">Saved locally</span>
+              </div>
+              <textarea id="verseNote" class="note-area" rows="5" placeholder="Your note for the focused verse stays in local storage on this device."></textarea>
+            </div>
+
+            <div class="study-block">
+              <div class="study-block-head">
+                <h4>AI Study Note</h4>
+                <span class="mini-meta">Pollinations text</span>
+              </div>
+              <div id="aiStudyOutput" class="study-scroll muted-copy">Ask AI to explain the focused verse, compare themes, or give a concise prayer.</div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="browse">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Explore Scripture</div>
+            <h2>Browse Books, Topics, And Journeys</h2>
+          </div>
+          <div class="status-pill" id="browseStatus">Loading browse guides...</div>
+        </div>
+
+        <div class="browse-layout">
+          <div class="tool-card browse-hero-card">
+            <div class="results-header">
+              <h3>Start A Guided Path</h3>
+              <span class="mini-meta" id="browseSummaryMeta">Canon + topics + journeys</span>
+            </div>
+            <p id="browseSummary" class="muted-copy">Browse Bible books, guided journeys, and real-life study themes without losing your place in the reader.</p>
+            <div class="browse-action-row" id="browseExtraActions"></div>
+          </div>
+
+          <div class="tool-card">
+            <div class="results-header">
+              <h3>Featured Journeys</h3>
+              <span class="mini-meta">19 tracks</span>
+            </div>
+            <div id="browseJourneyGrid" class="browse-journey-grid"></div>
+          </div>
+
+          <div class="tool-card">
+            <div class="results-header">
+              <h3>Old Testament</h3>
+              <span class="mini-meta">Books grouped for quick opening</span>
+            </div>
+            <div id="browseOldTestamentGrid" class="browse-book-grid"></div>
+          </div>
+
+          <div class="tool-card">
+            <div class="results-header">
+              <h3>New Testament</h3>
+              <span class="mini-meta">Books grouped for quick opening</span>
+            </div>
+            <div id="browseNewTestamentGrid" class="browse-book-grid"></div>
+          </div>
+
+          <div class="tool-card">
+            <div class="results-header">
+              <h3>Bible Topics & Extras</h3>
+              <span class="mini-meta">Faith, marriage, anxiety, prayer, and more</span>
+            </div>
+            <div id="browseTopicGroups" class="browse-topic-groups"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="journeys">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Guided Study</div>
+            <h2>Reading Journeys</h2>
+          </div>
+          <div class="status-pill" id="journeyStatus">Choose a journey</div>
+        </div>
+
+        <div class="journey-layout">
+          <div class="journey-list" id="journeyList"></div>
+
+          <div class="journey-detail-card">
+            <div id="journeyBanner" class="journey-banner" aria-hidden="true"></div>
+            <div class="journey-detail-head">
+              <div>
+                <div class="panel-kicker" id="journeyTone">Story arc</div>
+                <h3 id="journeyDetailTitle">Select a journey</h3>
+              </div>
+              <div class="journey-progress-badge" id="journeyProgressBadge">0 of 0</div>
+            </div>
+
+            <p id="journeyDetailSummary" class="muted-copy">Choose a journey to see the passage sequence, prompts, and progress.</p>
+            <div class="journey-metrics">
+              <div class="journey-metric">
+                <span>Focus</span>
+                <strong id="journeyFocus">Bible study</strong>
+              </div>
+              <div class="journey-metric">
+                <span>Stops</span>
+                <strong id="journeyLength">0</strong>
+              </div>
+            </div>
+            <div class="journey-learning-block">
+              <div class="study-block-head">
+                <h4>What You Will Learn</h4>
+                <span class="mini-meta" id="journeyLearnMeta">5-part path</span>
+              </div>
+              <div id="journeyPathList" class="journey-path-list"></div>
+            </div>
+            <div id="journeyStepList" class="journey-step-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="desk">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Local Workspace</div>
+            <h2>Study Desk</h2>
+          </div>
+          <div class="status-pill" id="deskStatus">Saved locally</div>
+        </div>
+
+        <div class="desk-layout">
+          <div class="desk-column">
+            <div class="tool-card">
+              <div class="results-header">
+                <h3>Study Dashboard</h3>
+                <span class="mini-meta">Pulse and patterns</span>
+              </div>
+              <div id="studyDashboardGrid" class="study-dashboard-grid"></div>
+              <div id="studyPatternList" class="study-pattern-list muted-copy">Open passages and save study activity to see your reading patterns.</div>
+            </div>
+
+            <div class="tool-card">
+              <div class="results-header">
+                <h3>Current Study</h3>
+                <span class="mini-meta">Local notebook</span>
+              </div>
+              <label class="field">
+                <span>Study title</span>
+                <input id="deskStudyTitle" type="text" placeholder="Kingdom, exile, wisdom, prayer...">
+              </label>
+              <label class="field">
+                <span>Questions to answer</span>
+                <textarea id="deskQuestions" rows="5" placeholder="What am I trying to understand in this study?"></textarea>
+              </label>
+              <label class="field">
+                <span>Observation outline</span>
+                <textarea id="deskOutline" rows="8" placeholder="Write observations, structure, repeated words, and applications."></textarea>
+              </label>
+            </div>
+
+            <div class="tool-card">
+              <div class="results-header">
+                <h3>Prayer and Application</h3>
+                <span class="mini-meta">Keep it practical</span>
+              </div>
+              <label class="field">
+                <span>Prayer list</span>
+                <textarea id="deskPrayer" rows="7" placeholder="Turn study into prayer, confession, thanksgiving, and requests."></textarea>
+              </label>
+            </div>
+          </div>
+
+          <div class="desk-column">
+            <div class="tool-card">
+              <div class="results-header">
+                <h3>Saved Searches</h3>
+                <span class="mini-meta">Reusable study prompts</span>
+              </div>
+              <div id="savedSearchList" class="results-list muted-copy">Saved searches will appear here.</div>
+            </div>
+
+            <div class="tool-card">
+              <div class="results-header">
+                <h3>Recent Study Trail</h3>
+                <span class="mini-meta">Reader and tool history</span>
+              </div>
+              <div id="recentReferenceList" class="results-list muted-copy">Recent passages will appear here.</div>
+            </div>
+
+            <div class="tool-card">
+              <div class="results-header">
+                <h3>Memory Lab</h3>
+                <span class="mini-meta">Review + share</span>
+              </div>
+              <p class="muted-copy">Bookmarks stay in your review queue. Prompts below pull from bookmarks, highlights, and recent study history.</p>
+              <div id="deskBookmarkList" class="results-list muted-copy">Bookmarked verses will appear here.</div>
+              <div class="study-block-head memory-review-head">
+                <h4>Review Prompts</h4>
+                <span class="mini-meta">Open or copy</span>
+              </div>
+              <div id="memoryReviewList" class="results-list muted-copy">Memory prompts will appear here.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="account">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Identity And Sync</div>
+            <h2>Account Settings</h2>
+          </div>
+          <div class="account-header-actions">
+            <button type="button" class="ghost-button account-shortcut-button" id="accountQuickSettingsButton" aria-label="Open account settings">
+              <span class="account-shortcut-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3.2"></circle>
+                  <path d="M19.4 15a1 1 0 0 0 .2 1.1l.1.1a1.8 1.8 0 0 1 0 2.5 1.8 1.8 0 0 1-2.5 0l-.1-.1a1 1 0 0 0-1.1-.2 1 1 0 0 0-.6.9V19.5A1.8 1.8 0 0 1 13.6 21h-3.2a1.8 1.8 0 0 1-1.8-1.5v-.2a1 1 0 0 0-.6-.9 1 1 0 0 0-1.1.2l-.1.1a1.8 1.8 0 0 1-2.5 0 1.8 1.8 0 0 1 0-2.5l.1-.1a1 1 0 0 0 .2-1.1 1 1 0 0 0-.9-.6H4.5A1.8 1.8 0 0 1 3 12.6V9.4A1.8 1.8 0 0 1 4.5 7.6h.2a1 1 0 0 0 .9-.6 1 1 0 0 0-.2-1.1l-.1-.1a1.8 1.8 0 0 1 0-2.5 1.8 1.8 0 0 1 2.5 0l.1.1a1 1 0 0 0 1.1.2 1 1 0 0 0 .6-.9V4.5A1.8 1.8 0 0 1 10.4 3h3.2a1.8 1.8 0 0 1 1.8 1.5v.2a1 1 0 0 0 .6.9 1 1 0 0 0 1.1-.2l.1-.1a1.8 1.8 0 0 1 2.5 0 1.8 1.8 0 0 1 0 2.5l-.1.1a1 1 0 0 0-.2 1.1 1 1 0 0 0 .9.6h.2A1.8 1.8 0 0 1 21 9.4v3.2a1.8 1.8 0 0 1-1.5 1.8h-.2a1 1 0 0 0-.9.6Z"></path>
+                </svg>
+              </span>
+              <span>Settings</span>
+            </button>
+            <button type="button" class="ghost-button account-shortcut-button" id="accountQuickMoreButton" aria-label="Open more account tools">
+              <span class="account-shortcut-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="5" cy="12" r="1.8"></circle>
+                  <circle cx="12" cy="12" r="1.8"></circle>
+                  <circle cx="19" cy="12" r="1.8"></circle>
+                </svg>
+              </span>
+              <span>More</span>
+            </button>
+            <div class="status-pill" id="accountStatus">Checking session...</div>
+          </div>
+        </div>
+
+        <div id="accountMessage" class="reader-prose account-message">Sign in to sync notes, bookmarks, and study progress across sessions.</div>
+
+        <div class="account-layout">
+          <div class="account-column">
+            <div class="tool-card account-card-target" id="accountSummaryCard">
+              <div class="results-header">
+                <h3>Account Summary</h3>
+                <span class="mini-meta" id="accountSyncBadge">Local only</span>
+              </div>
+              <div class="account-summary">
+                <div class="account-avatar" id="accountAvatar" aria-hidden="true">SJ</div>
+                <div>
+                  <strong id="accountSummaryName">Guest reader</strong>
+                  <div id="accountSummaryEmail" class="muted-copy">Not signed in</div>
+                  <div id="accountSummaryMeta" class="mini-meta">Bookmarks and notes stay on this device until you connect an account.</div>
+                </div>
+              </div>
+              <div class="account-chip-row">
+                <span class="badge" id="accountVerifiedBadge">No account</span>
+                <span class="badge" id="accountCloudState">Cloud sync unavailable</span>
+              </div>
+            </div>
+
+              <div id="authSignedOut" class="tool-card">
+                <div class="results-header">
+                  <h3>Sign In Or Create An Account</h3>
+                  <span class="mini-meta">Google auth + Gmail signup</span>
+                </div>
+                <div class="account-auth-grid">
+                  <div class="auth-surface">
+                    <div class="panel-kicker">Google</div>
+                    <h4>Continue with Google</h4>
+                    <p class="muted-copy">Use Google OAuth for one-click sign-in, then finish website verification with the Gmail code we send on first access.</p>
+                    <a id="googleAuthButton" class="hero-button auth-link-button" href="/auth/google/start">Sign in with Google</a>
+                    <div id="googleAuthMeta" class="mini-meta">Waiting for Google setup</div>
+                  </div>
+
+                  <div class="auth-surface">
+                    <div class="panel-kicker">Email Login</div>
+                    <h4>Sign in with email + password</h4>
+                    <form id="accountLoginForm" class="account-form">
+                      <label class="field">
+                        <span>Email</span>
+                        <input id="loginEmail" type="email" autocomplete="email" placeholder="reader@example.com" required>
+                      </label>
+                      <label class="field">
+                        <span>Password</span>
+                        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" required minlength="8">
+                      </label>
+                      <button type="submit" class="hero-button">Sign in</button>
+                    </form>
+                  </div>
+              </div>
+
+              <div class="auth-surface auth-surface-reset">
+                <div id="accountSecurityCard"></div>
+                <div class="panel-kicker">Password Reset</div>
+                <h4>Send a reset email</h4>
+                <p class="muted-copy">Use your Gmail sender configuration to deliver a password reset link for any existing account.</p>
+                <form id="accountResetRequestForm" class="account-form">
+                  <label class="field">
+                    <span>Email</span>
+                    <input id="accountResetEmail" type="email" autocomplete="email" placeholder="reader@example.com" required>
+                  </label>
+                  <button type="submit" class="hero-button">Send reset email</button>
+                </form>
+              </div>
+
+              <div class="auth-surface auth-surface-signup">
+                  <div class="panel-kicker">Gmail Signup</div>
+                  <h4>Create an account with email</h4>
+                  <p class="muted-copy">New accounts use email + password, then complete website verification with a Gmail code or verification link.</p>
+                  <form id="accountSignupForm" class="account-form account-form-wide">
+                    <label class="field">
+                      <span>Display name</span>
+                      <input id="signupName" type="text" autocomplete="name" placeholder="Bible reader" required minlength="2" maxlength="80">
+                    </label>
+                    <label class="field">
+                      <span>Email</span>
+                      <input id="signupEmail" type="email" autocomplete="email" placeholder="reader@example.com" required>
+                    </label>
+                    <label class="field">
+                      <span>Password</span>
+                      <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Choose a secure password" required minlength="8">
+                    </label>
+                    <button type="submit" class="hero-button">Create account</button>
+                  </form>
+                  <div id="gmailSignupMeta" class="mini-meta">Waiting for Gmail setup</div>
+                </div>
+
+                <div id="accountResetTokenSurface" class="auth-surface auth-surface-signup is-hidden">
+                  <div class="panel-kicker">Reset Link</div>
+                  <h4>Choose a new password</h4>
+                  <p id="resetTokenMeta" class="muted-copy">Your reset token is loaded. Set a new password to finish the reset.</p>
+                <form id="accountResetForm" class="account-form">
+                  <label class="field">
+                    <span>New password</span>
+                    <input id="accountResetPassword" type="password" autocomplete="new-password" placeholder="Choose a secure password" required minlength="8">
+                  </label>
+                  <label class="field">
+                    <span>Confirm password</span>
+                    <input id="accountResetPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repeat the new password" required minlength="8">
+                  </label>
+                  <button type="submit" class="hero-button">Reset password</button>
+                </form>
+              </div>
+            </div>
+
+            <div id="accountVerificationCard" class="tool-card is-hidden">
+              <div class="results-header">
+                <h3>Website Verification</h3>
+                <span class="mini-meta">Gmail code + link</span>
+              </div>
+              <p id="accountVerificationMeta" class="muted-copy">After Google or email sign-in, the Gmail verification step appears here when needed.</p>
+              <form id="accountVerificationForm" class="account-form account-form-verify">
+                <label class="field">
+                  <span>Email</span>
+                  <input id="accountVerificationEmail" type="email" autocomplete="email" placeholder="reader@example.com" required>
+                </label>
+                <label class="field">
+                  <span>Verification code</span>
+                  <input id="accountVerificationCode" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" required maxlength="6" pattern="[0-9]{6}">
+                </label>
+                <button type="submit" class="hero-button">Verify on website</button>
+              </form>
+              <div class="reader-actions">
+                <button type="button" class="ghost-button" id="accountVerificationResendButton">Send another code</button>
+              </div>
+            </div>
+
+              <div id="authSignedIn" class="tool-card">
+                <div class="results-header">
+                  <h3>Connected Account</h3>
+                  <span class="mini-meta">Profile and security</span>
+                </div>
+                <div class="stacked-copy">
+                  <p class="muted-copy">Your study data can sync to your account from here. Google accounts can also add a local password if you want email sign-in as a backup.</p>
+                </div>
+                <div class="reader-actions">
+                  <button type="button" class="ghost-button" id="accountResendVerificationButton">Resend verification</button>
+                  <button type="button" class="ghost-button" id="accountSignOutButton">Sign out</button>
+                </div>
+            </div>
+          </div>
+
+          <div class="account-column">
+            <div class="tool-card account-card-target" id="accountPreferencesCard">
+              <div class="results-header">
+                <h3>Preferences</h3>
+                <span class="mini-meta">Saved to your account</span>
+              </div>
+              <form id="accountSettingsForm" class="account-form">
+                <label class="field">
+                  <span>Username</span>
+                  <input id="accountDisplayName" type="text" placeholder="selah reader" required minlength="2" maxlength="80">
+                </label>
+                <label class="field">
+                  <span>Email</span>
+                  <input id="accountEmail" type="email" readonly>
+                </label>
+                <label class="field">
+                  <span>Default section</span>
+                  <select id="accountDefaultPanel">
+                    <option value="home">Home</option>
+                    <option value="read">Read</option>
+                    <option value="journeys">Journeys</option>
+                    <option value="desk">Study Desk</option>
+                    <option value="account">Account</option>
+                    <option value="browse">Browse</option>
+                    <option value="search">Search</option>
+                    <option value="dictionary">Dictionary</option>
+                    <option value="concordance">Concordance</option>
+                    <option value="atlas">Atlas</option>
+                    <option value="library">Library</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Reading language</span>
+                  <select id="accountLanguage"></select>
+                </label>
+                <label class="field">
+                  <span>Reader view</span>
+                  <select id="accountDisplayMode">
+                    <option value="study">Study view</option>
+                    <option value="simple">Simple book</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Theme</span>
+                  <select id="accountTheme">
+                    <option value="sepia">Sepia</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Text size</span>
+                  <select id="accountTextSize">
+                    <option value="compact">Compact</option>
+                    <option value="comfortable">Comfortable</option>
+                    <option value="large">Large</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Motion style</span>
+                  <select id="accountMotion">
+                    <option value="enhanced">Enhanced</option>
+                    <option value="subtle">Subtle</option>
+                    <option value="reduced">Reduced</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Reader width</span>
+                  <select id="accountReaderWidth">
+                    <option value="narrow">Focused</option>
+                    <option value="standard">Standard</option>
+                    <option value="wide">Wide</option>
+                  </select>
+                </label>
+                <label class="check-field">
+                  <input id="accountShowVerseNumbers" type="checkbox">
+                  <span>Show verse numbers inside the chapter reader.</span>
+                </label>
+                <label class="check-field">
+                  <input id="accountResumeLastReference" type="checkbox">
+                  <span>Resume from the last passage you studied when the app opens.</span>
+                </label>
+                <label class="check-field">
+                  <input id="accountAutoSync" type="checkbox">
+                  <span>Sync bookmarks, notes, and study desk changes to this account automatically.</span>
+                </label>
+                <label class="check-field">
+                  <input id="accountPushNotifications" type="checkbox">
+                  <span>Keep only important activity in the quiet notification history.</span>
+                </label>
+                <label class="check-field">
+                  <input id="accountEmailNotifications" type="checkbox">
+                  <span>Allow email notifications for study reminders and account alerts.</span>
+                </label>
+                <div class="settings-subhead">Gmail Preferences</div>
+                <label class="check-field">
+                  <input id="accountWelcomeEmails" type="checkbox">
+                  <span>Send a welcome email after I finish verification.</span>
+                </label>
+                <label class="check-field">
+                  <input id="accountSecurityEmails" type="checkbox">
+                  <span>Send Gmail security notices for password changes and important account updates.</span>
+                </label>
+                <label class="check-field">
+                  <input id="accountStudyEmails" type="checkbox">
+                  <span>Allow future study recap and feature emails.</span>
+                </label>
+                <button type="submit" class="hero-button">Save settings</button>
+              </form>
+            </div>
+
+            <div class="tool-card account-card-target" id="accountNotificationCard">
+              <div class="results-header">
+                <h3>Settings Hub</h3>
+                <span class="mini-meta">Alerts, audio, help</span>
+              </div>
+              <p class="muted-copy">Use the Settings button above for email notifications, text-to-speech, public links, privacy, policies, and help.</p>
+              <div class="reader-actions">
+                <button type="button" class="ghost-button" id="accountOpenNotificationsButton">Open settings hub</button>
+                <button type="button" class="ghost-button" id="accountSendNotificationTestButton">Send test email</button>
+              </div>
+            </div>
+
+            <div class="tool-card account-card-target" id="accountCloudCard">
+              <div class="results-header">
+                <h3>Study Cloud</h3>
+                <span class="mini-meta" id="accountSyncMeta">No cloud sync yet</span>
+              </div>
+              <p class="muted-copy">Push your current browser study state to the account or restore the latest saved copy from the account.</p>
+              <div class="reader-actions">
+                <button type="button" class="ghost-button" id="accountPushButton">Upload current study</button>
+                <button type="button" class="ghost-button" id="accountPullButton">Restore from account</button>
+              </div>
+            </div>
+
+            <div class="tool-card account-card-target" id="accountPasswordCard">
+              <div class="results-header">
+                <h3>Password</h3>
+                <span class="mini-meta">Optional for Google users</span>
+              </div>
+              <form id="accountPasswordForm" class="account-form">
+                <label class="field">
+                  <span>Current password</span>
+                  <input id="accountCurrentPassword" type="password" autocomplete="current-password" placeholder="Only required if a password already exists">
+                </label>
+                <label class="field">
+                  <span>New password</span>
+                  <input id="accountNewPassword" type="password" autocomplete="new-password" placeholder="Set or change your password" required minlength="8">
+                </label>
+                <button type="submit" class="hero-button">Update password</button>
+              </form>
+            </div>
+
+            <div class="tool-card account-card-target" id="accountDangerCard">
+              <div class="results-header">
+                <h3>Danger Zone</h3>
+                <span class="mini-meta">Permanent actions</span>
+              </div>
+              <p class="muted-copy">Delete the signed-in account from this PC if you no longer want stored account data.</p>
+              <label class="field">
+                <span>Type DELETE to confirm</span>
+                <input id="accountDeleteConfirm" type="text" placeholder="DELETE">
+              </label>
+              <button type="button" class="ghost-button danger-button" id="accountDeleteButton">Delete account</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="settingsMenuModal" class="account-modal is-hidden" aria-hidden="true">
+          <div class="account-modal-backdrop" data-account-modal-close></div>
+          <div class="account-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsMenuTitle">
+            <div class="account-modal-head">
+              <div>
+                <div class="panel-kicker">Preferences</div>
+                <h3 id="settingsMenuTitle">Reader and account settings</h3>
+              </div>
+              <button type="button" class="ghost-button" id="settingsMenuCloseButton">Close</button>
+            </div>
+            <div class="account-modal-body">
+              <div class="account-modal-grid">
+                <label class="field">
+                  <span>Default section</span>
+                  <select id="quickDefaultPanel">
+                    <option value="home">Home</option>
+                    <option value="read">Read</option>
+                    <option value="browse">Browse</option>
+                    <option value="journeys">Journeys</option>
+                    <option value="desk">Study Desk</option>
+                    <option value="account">Account</option>
+                    <option value="search">Search</option>
+                    <option value="dictionary">Dictionary</option>
+                    <option value="concordance">Concordance</option>
+                    <option value="atlas">Atlas</option>
+                    <option value="library">Library</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Reading language</span>
+                  <select id="quickLanguageSelect"></select>
+                </label>
+                <label class="field">
+                  <span>Reader view</span>
+                  <select id="quickDisplayModeSelect">
+                    <option value="study">Study view</option>
+                    <option value="simple">Simple book</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Theme</span>
+                  <select id="quickThemeSelect">
+                    <option value="sepia">Sepia</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Text size</span>
+                  <select id="quickTextSizeSelect">
+                    <option value="compact">Compact</option>
+                    <option value="comfortable">Comfortable</option>
+                    <option value="large">Large</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Motion</span>
+                  <select id="quickMotionSelect">
+                    <option value="enhanced">Enhanced</option>
+                    <option value="subtle">Subtle</option>
+                    <option value="reduced">Reduced</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span>Reader width</span>
+                  <select id="quickReaderWidthSelect">
+                    <option value="narrow">Focused</option>
+                    <option value="standard">Standard</option>
+                    <option value="wide">Wide</option>
+                  </select>
+                </label>
+              </div>
+              <div class="account-modal-checks">
+                <label class="check-field">
+                  <input id="quickShowVerseNumbers" type="checkbox">
+                  <span>Show verse numbers in the chapter reader.</span>
+                </label>
+                <label class="check-field">
+                  <input id="quickResumeLastReference" type="checkbox">
+                  <span>Resume from the last passage when the app opens.</span>
+                </label>
+                <label class="check-field">
+                  <input id="quickPushNotifications" type="checkbox">
+                  <span>Keep only important activity in the quiet notification history.</span>
+                </label>
+              </div>
+              <div class="account-modal-section" id="settingsAudioSection">
+                <div class="results-header">
+                  <h4>Voice and audio</h4>
+                  <span class="mini-meta">Free built-in voices</span>
+                </div>
+                <div class="account-modal-grid">
+                  <label class="field">
+                    <span>Speech voice</span>
+                    <select id="accountSpeechVoice"></select>
+                  </label>
+                  <label class="field">
+                    <span>Speech speed</span>
+                    <select id="accountSpeechRate">
+                      <option value="0.85">Slow</option>
+                      <option value="1">Normal</option>
+                      <option value="1.08">Natural</option>
+                      <option value="1.15">Clear</option>
+                      <option value="1.3">Fast</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="account-modal-note">Selah Journey uses the browser&apos;s free text-to-speech engine. Automatic voice selection prefers the most natural voice available on this device.</div>
+                <div class="reader-actions">
+                  <button type="button" class="ghost-button" id="accountSpeakChapterButton">Read chapter aloud</button>
+                  <button type="button" class="ghost-button" id="accountSpeakVerseButton">Read focused verse</button>
+                  <button type="button" class="ghost-button" id="accountStopSpeechButton">Stop audio</button>
+                </div>
+              </div>
+              <div class="account-modal-section" id="settingsNotificationSection">
+                <div class="results-header">
+                  <h4>Email notifications</h4>
+                  <span class="mini-meta" id="notificationsStatus">Email delivery ready</span>
+                </div>
+                <div class="mini-meta" id="notificationsPermissionMeta">Email delivery status pending</div>
+                <p class="muted-copy">This area is email-first. Browser popups stay off, and only important email events are kept in the history list.</p>
+                <div class="reader-actions">
+                  <button type="button" class="ghost-button" id="notificationsRefreshButton">Refresh history</button>
+                  <button type="button" class="ghost-button" id="notificationsEmailTestButton">Send test email</button>
+                  <button type="button" class="ghost-button" id="notificationsClearButton">Clear history</button>
+                </div>
+                <div class="results-header">
+                  <h4>Recent email history</h4>
+                  <span class="mini-meta" id="notificationsUnreadMeta">0 unread</span>
+                </div>
+                <div id="notificationsSummary" class="results-list muted-copy">Test emails and important delivery events will appear here.</div>
+                <div id="notificationsList" class="results-list muted-copy account-modal-list">No notifications yet.</div>
+              </div>
+              <div class="account-modal-section" id="settingsSupportSection">
+                <div class="results-header">
+                  <h4>Help, info, and sharing</h4>
+                  <span class="mini-meta" id="supportStatus">Help and info ready</span>
+                </div>
+                <div class="reader-actions">
+                  <button type="button" class="ghost-button" id="shareWebsiteButton">Share website</button>
+                  <button type="button" class="ghost-button" id="copyPublicLinkButton">Copy public link</button>
+                  <button type="button" class="ghost-button" id="supportDonationButton">Open donation link</button>
+                </div>
+                <div id="supportPublicUrl" class="reader-prose muted-copy">No public link detected yet. Start the public tunnel script on your PC to generate one.</div>
+                <div class="results-header">
+                  <h4>About, help, news, and policies</h4>
+                  <span class="mini-meta" id="supportVersionMeta">Selah Journey</span>
+                </div>
+                <div id="supportSectionList" class="support-section-list muted-copy account-modal-list">Support details load here.</div>
+              </div>
+              <div class="account-modal-note" id="quickSettingsMeta">Dark mode, text scale, and reading layout apply immediately.</div>
+            </div>
+            <div class="account-modal-actions">
+              <button type="button" class="ghost-button" id="quickSettingsResetButton">Reset to defaults</button>
+              <button type="button" class="hero-button" id="quickSettingsSaveButton">Save settings</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="moreMenuModal" class="account-modal is-hidden" aria-hidden="true">
+          <div class="account-modal-backdrop" data-account-modal-close></div>
+          <div class="account-modal-card account-modal-card-wide" role="dialog" aria-modal="true" aria-labelledby="moreMenuTitle">
+            <div class="account-modal-head">
+              <div>
+                <div class="panel-kicker">More</div>
+                <h3 id="moreMenuTitle">Security, sync, and data tools</h3>
+              </div>
+              <button type="button" class="ghost-button" id="moreMenuCloseButton">Close</button>
+            </div>
+            <div class="account-modal-body">
+              <div class="account-more-grid">
+                <button type="button" class="account-action-tile" id="moreOpenCloudButton">
+                  <strong>Study Cloud</strong>
+                  <span>Upload or restore your study state.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreOpenPasswordButton">
+                  <strong>Password</strong>
+                  <span>Jump to password tools and backup sign-in options.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreOpenResetButton">
+                  <strong>Password Reset</strong>
+                  <span>Open the reset-email area for recovery.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreOpenVerificationButton">
+                  <strong>Verification</strong>
+                  <span>Jump to the Gmail code verification section.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreOpenNotificationsButton">
+                  <strong>Notifications</strong>
+                  <span>Open the notification center and reminder tools.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreOpenSupportButton">
+                  <strong>Support</strong>
+                  <span>Open about, help, news, privacy, and tracking details.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreExportDataButton">
+                  <strong>Export Study Data</strong>
+                  <span>Download bookmarks, notes, highlights, desk, and settings as JSON.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreClearLocalDataButton">
+                  <strong>Clear Local Data</strong>
+                  <span>Reset this browser back to a clean study state.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreShareWebsiteButton">
+                  <strong>Share Website</strong>
+                  <span>Copy or share the website link for another device.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreDonationButton">
+                  <strong>Donation</strong>
+                  <span>Open the support area and donation section.</span>
+                </button>
+                <button type="button" class="account-action-tile" id="moreDeleteAccountButton">
+                  <strong>Delete Account</strong>
+                  <span>Jump to the permanent account deletion card.</span>
+                </button>
+              </div>
+              <div id="moreMenuMeta" class="account-modal-note">Use More for recovery, sync tools, and local data control.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="search">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Snapshot Search</div>
+            <h2>Advanced Search</h2>
+          </div>
+          <div class="status-pill" id="searchStatus">Uses Bible SuperSearch KJV</div>
+        </div>
+
+        <form id="advancedSearchForm" class="search-card">
+          <div class="search-grid">
+            <label class="field">
+              <span>Exact phrase</span>
+              <input id="exactPhrase" type="text" placeholder="The truth shall make you free">
+            </label>
+            <label class="field">
+              <span>All these words</span>
+              <input id="allWords" type="text" placeholder="faith grace obedience">
+            </label>
+            <label class="field">
+              <span>One or more words</span>
+              <input id="moreWords" type="text" placeholder="mercy hope joy">
+            </label>
+            <label class="field">
+              <span>None of these words</span>
+              <input id="noWords" type="text" placeholder="judgment wrath">
+            </label>
+            <label class="field search-filter">
+              <span>Book filter</span>
+              <select id="searchFilter"></select>
+            </label>
+          </div>
+          <div class="reader-actions">
+            <button type="submit" class="hero-button">Run Search</button>
+            <button type="button" class="ghost-button" id="saveSearchButton">Save Search</button>
+            <button type="button" class="ghost-button" id="searchClearButton">Clear</button>
+          </div>
+        </form>
+
+        <div class="results-card">
+          <div class="results-header">
+            <h3>Results</h3>
+            <span class="mini-meta" id="searchResultsMeta">No search yet</span>
+          </div>
+          <div id="searchResults" class="results-list muted-copy">Search results will appear here.</div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="dictionary">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Dictionary Snapshot</div>
+            <h2>Word Study</h2>
+          </div>
+          <div class="status-pill">AI explanation + verse hits</div>
+        </div>
+
+        <div class="tool-layout">
+          <div class="tool-card">
+            <div class="results-header">
+              <h3 id="dictionaryHeading">Bible Dictionary</h3>
+              <span class="mini-meta">Rebuilt from local HTML</span>
+            </div>
+            <ul id="dictionaryBullets" class="bullet-list"></ul>
+            <div id="dictionaryAlphabet" class="alphabet-strip"></div>
+            <form id="dictionaryForm" class="inline-form">
+              <input id="dictionaryWord" type="text" placeholder="covenant">
+              <button type="submit" class="hero-button">Study Word</button>
+            </form>
+          </div>
+          <div class="tool-card">
+            <div class="study-block-head">
+              <h4>AI Explanation</h4>
+              <span class="mini-meta" id="dictionaryMeta">No word selected</span>
+            </div>
+            <div id="dictionaryAi" class="study-scroll muted-copy">Search a Bible word to get a short AI study note and related verses.</div>
+          </div>
+        </div>
+
+        <div class="results-card">
+          <div class="results-header">
+            <h3>Verse Hits</h3>
+            <span class="mini-meta" id="dictionaryResultsMeta">0 matches</span>
+          </div>
+          <div id="dictionaryResults" class="results-list muted-copy">Verse hits appear here after a word study.</div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="concordance">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Concordance Snapshot</div>
+            <h2>Concordance</h2>
+          </div>
+          <div class="status-pill">KJV search index</div>
+        </div>
+
+        <div class="tool-layout">
+          <div class="tool-card">
+            <div class="results-header">
+              <h3>Word Lookup</h3>
+              <span class="mini-meta">Search every verse occurrence</span>
+            </div>
+            <div id="concordanceIntro" class="stacked-copy"></div>
+            <div id="concordanceAlphabet" class="alphabet-strip"></div>
+            <form id="concordanceForm" class="inline-form">
+              <input id="concordanceWord" type="text" placeholder="light">
+              <button type="submit" class="hero-button">Open Concordance</button>
+            </form>
+          </div>
+          <div class="tool-card">
+            <div class="study-block-head">
+              <h4>Bookmarks</h4>
+              <span class="mini-meta">Stored locally</span>
+            </div>
+            <div id="bookmarkList" class="results-list muted-copy">Bookmark a verse in the reader to keep it here.</div>
+          </div>
+        </div>
+
+        <div class="results-card">
+          <div class="results-header">
+            <h3>Occurrences</h3>
+            <span class="mini-meta" id="concordanceResultsMeta">0 matches</span>
+          </div>
+          <div id="concordanceResults" class="results-list muted-copy">Concordance results will appear here.</div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="atlas">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Atlas Snapshot</div>
+            <h2>Place Study</h2>
+          </div>
+          <div class="status-pill">AI atlas notes</div>
+        </div>
+
+        <div class="tool-layout">
+          <div class="tool-card">
+            <div class="results-header">
+              <h3>Place Search</h3>
+              <span class="mini-meta" id="atlasBookCountMeta">0 books loaded</span>
+            </div>
+            <p class="muted-copy">Use the atlas ideas from the saved page, then enrich them with live verse hits and a concise AI place summary.</p>
+            <label class="field">
+              <span>Jump from book list</span>
+              <select id="atlasBookSelect"></select>
+            </label>
+            <div id="atlasAlphabet" class="alphabet-strip"></div>
+            <form id="atlasForm" class="inline-form">
+              <input id="atlasPlace" type="text" placeholder="Jericho">
+              <button type="submit" class="hero-button">Study Place</button>
+            </form>
+          </div>
+          <div class="tool-card">
+            <div class="study-block-head">
+              <h4>Atlas Note</h4>
+              <span class="mini-meta" id="atlasMeta">No place selected</span>
+            </div>
+            <div id="atlasAi" class="study-scroll muted-copy">Search a place to get a short atlas note, key passages, and a modern anchor if known.</div>
+            <div class="reader-actions">
+              <a id="atlasMapLink" class="ghost-link is-disabled" href="#" target="_blank" rel="noreferrer">Open map search</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="results-card">
+          <div class="results-header">
+            <h3>Place Mentions</h3>
+            <span class="mini-meta" id="atlasResultsMeta">0 matches</span>
+          </div>
+          <div id="atlasResults" class="results-list muted-copy">Verse hits for the place will appear here.</div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel="library">
+        <div class="panel-header">
+          <div>
+            <div class="panel-kicker">Library Snapshot</div>
+            <h2>Study Library</h2>
+          </div>
+          <div class="status-pill" id="libraryStatus">Loading cards...</div>
+        </div>
+
+        <div class="controls-card">
+          <label class="field">
+            <span>Filter library</span>
+            <input id="libraryFilter" type="text" placeholder="history, translators, strongs">
+          </label>
+        </div>
+
+        <div id="libraryGrid" class="library-grid"></div>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <div id="snapshotSources" class="footer-copy"></div>
+      <div class="footer-copy">
+        Live data: <a href="https://bible.helloao.org/docs/" target="_blank" rel="noreferrer">Free Use Bible API</a>,
+        <a href="https://api.biblesupersearch.com/" target="_blank" rel="noreferrer">Bible SuperSearch API</a>,
+        <a href="https://github.com/pollinations/pollinations" target="_blank" rel="noreferrer">Pollinations text</a>.
+      </div>
+    </footer>
+
+    <button type="button" class="floating-voice-button is-hidden" id="floatingStopSpeechButton">Stop Audio</button>
+  </div>
+
+  <script src="library-data.js"></script>
+  <script src="study-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

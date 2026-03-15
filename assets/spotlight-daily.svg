@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Daily focus art">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7d58f"/>
+      <stop offset="55%" stop-color="#be7241"/>
+      <stop offset="100%" stop-color="#352019"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="52%" cy="28%" r="28%">
+      <stop offset="0%" stop-color="#fff8d6"/>
+      <stop offset="100%" stop-color="#fff8d6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="620" fill="url(#sky)"/>
+  <rect width="900" height="620" fill="url(#sun)"/>
+  <path d="M0 470 C138 438 312 438 444 474 C632 526 752 492 900 438 L900 620 L0 620 Z" fill="#2c1a14"/>
+  <g opacity="0.48" stroke="#ffe39d" stroke-width="8" stroke-linecap="round">
+    <path d="M450 42 L450 244"/>
+    <path d="M352 90 L548 196"/>
+    <path d="M548 90 L352 196"/>
+    <path d="M258 160 L642 160"/>
+  </g>
+  <g transform="translate(332 102)" fill="#fff4cb" opacity="0.96">
+    <rect x="84" y="0" width="30" height="174" rx="10"/>
+    <rect x="24" y="66" width="150" height="30" rx="10"/>
+  </g>
+  <g transform="translate(170 372)">
+    <path d="M0 42 C76 4 202 -8 348 2 C490 10 606 30 662 66 L618 196 C544 170 434 154 332 154 C222 154 114 168 36 198 Z" fill="#b97e42"/>
+    <path d="M38 58 C114 30 214 24 332 30 C452 36 544 48 610 74 L586 174 C522 156 434 146 334 146 C226 146 138 156 66 174 Z" fill="#f4e3ba"/>
+    <path d="M334 30 L334 146" stroke="#a76831" stroke-width="10"/>
+    <path d="M78 88 C178 74 250 72 320 78" stroke="#cfb07c" stroke-width="4" opacity="0.7"/>
+    <path d="M350 78 C422 72 492 74 584 88" stroke="#cfb07c" stroke-width="4" opacity="0.7"/>
+  </g>
+</svg>

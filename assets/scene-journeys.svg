@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" role="img" aria-label="Guided journey scene">
+  <defs>
+    <linearGradient id="journeySky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5d89c"/>
+      <stop offset="48%" stop-color="#bd7546"/>
+      <stop offset="100%" stop-color="#271915"/>
+    </linearGradient>
+    <radialGradient id="journeyGlow" cx="72%" cy="22%" r="34%">
+      <stop offset="0%" stop-color="#fff8d8"/>
+      <stop offset="100%" stop-color="#fff8d8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="journeyValley" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#62402d"/>
+      <stop offset="100%" stop-color="#201511"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="960" fill="url(#journeySky)"/>
+  <rect width="1600" height="960" fill="url(#journeyGlow)"/>
+
+  <path d="M0 546 C192 442 366 420 552 476 C744 536 932 554 1106 498 C1288 440 1422 402 1600 412 L1600 960 L0 960 Z" fill="#6b4532" opacity="0.56"/>
+  <path d="M0 652 C218 574 448 592 636 664 C844 744 1028 752 1250 676 C1388 628 1504 608 1600 612 L1600 960 L0 960 Z" fill="url(#journeyValley)"/>
+
+  <path d="M892 960 C844 826 750 726 600 628 C506 566 404 514 272 460" fill="none" stroke="#e7bc70" stroke-width="42" stroke-linecap="round"/>
+  <path d="M900 960 C852 842 762 752 626 666 C530 606 426 560 300 520" fill="none" stroke="#f4ddb0" stroke-width="18" stroke-linecap="round" opacity="0.74"/>
+
+  <g transform="translate(1092 232)">
+    <path d="M0 146 C94 106 186 82 280 74 C352 68 420 76 484 100 C428 48 378 18 320 0 C226 26 138 74 58 144 Z" fill="#f3e2bc" opacity="0.9"/>
+    <path d="M58 152 C170 130 252 130 334 142" fill="none" stroke="#8e5b33" stroke-width="8" opacity="0.46"/>
+    <path d="M486 106 C560 126 624 164 676 220 C720 266 744 310 752 352 C662 300 580 274 480 268 C474 212 476 160 486 106 Z" fill="#ebc98f" opacity="0.82"/>
+  </g>
+
+  <g transform="translate(184 236)">
+    <path d="M170 0 C132 38 106 82 92 132 C64 156 46 200 40 256 L36 368 L242 368 L234 202 C230 94 208 28 170 0 Z" fill="#f2dab0" opacity="0.92"/>
+    <path d="M86 150 C124 124 176 122 226 148 L234 364 L40 364 Z" fill="#c68c4f" opacity="0.9"/>
+    <rect x="162" y="116" width="18" height="300" rx="9" fill="#57341f"/>
+    <path d="M194 96 C222 136 220 174 190 208" fill="none" stroke="#57341f" stroke-width="12" stroke-linecap="round"/>
+    <path d="M0 322 C48 314 86 314 122 324" fill="none" stroke="#f7e8c2" stroke-width="10" stroke-linecap="round" opacity="0.76"/>
+    <path d="M38 342 C84 334 122 336 158 346" fill="none" stroke="#f7e8c2" stroke-width="10" stroke-linecap="round" opacity="0.72"/>
+    <path d="M86 360 C130 354 168 358 204 370" fill="none" stroke="#f7e8c2" stroke-width="10" stroke-linecap="round" opacity="0.68"/>
+  </g>
+
+  <g fill="#fff1c8" opacity="0.86">
+    <circle cx="1228" cy="184" r="12"/>
+    <circle cx="1268" cy="200" r="8"/>
+    <circle cx="1312" cy="176" r="10"/>
+  </g>
+</svg>

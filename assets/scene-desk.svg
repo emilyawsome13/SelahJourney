@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 960" role="img" aria-label="Study desk scene">
+  <defs>
+    <linearGradient id="deskAir" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4d2e22"/>
+      <stop offset="55%" stop-color="#221712"/>
+      <stop offset="100%" stop-color="#130d0b"/>
+    </linearGradient>
+    <radialGradient id="deskLampGlow" cx="16%" cy="40%" r="28%">
+      <stop offset="0%" stop-color="#fff4c8"/>
+      <stop offset="60%" stop-color="#f5c978" stop-opacity="0.72"/>
+      <stop offset="100%" stop-color="#f5c978" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="deskWood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4e2d1f"/>
+      <stop offset="100%" stop-color="#241611"/>
+    </linearGradient>
+    <filter id="deskShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#0e0806" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="960" fill="url(#deskAir)"/>
+  <rect width="1600" height="960" fill="url(#deskLampGlow)"/>
+  <rect y="640" width="1600" height="320" fill="url(#deskWood)"/>
+
+  <g transform="translate(110 250)" filter="url(#deskShadow)">
+    <rect x="36" y="82" width="128" height="222" rx="32" fill="#3d261b" stroke="#c38543" stroke-width="10"/>
+    <rect x="60" y="0" width="82" height="88" rx="24" fill="#3d261b" stroke="#c38543" stroke-width="10"/>
+    <rect x="74" y="56" width="54" height="166" rx="24" fill="#ffdf92"/>
+  </g>
+
+  <g transform="translate(420 540)" filter="url(#deskShadow)">
+    <path d="M0 110 C98 48 254 22 432 22 C626 22 816 56 952 126 L900 308 C752 272 600 252 432 252 C256 252 122 276 48 314 Z" fill="#af7238"/>
+    <path d="M58 128 C186 76 298 62 434 62 C590 62 720 84 844 136 L812 282 C694 252 572 236 434 236 C284 236 168 252 88 280 Z" fill="#f4e2ba"/>
+    <path d="M434 62 L434 236" stroke="#8d5628" stroke-width="16"/>
+    <path d="M420 84 C302 78 210 82 126 100" stroke="#d1b180" stroke-width="6" opacity="0.74"/>
+    <path d="M448 84 C566 78 658 82 742 100" stroke="#d1b180" stroke-width="6" opacity="0.74"/>
+    <path d="M154 160 C264 144 340 142 418 150" fill="none" stroke="#dbc59d" stroke-width="4" opacity="0.68"/>
+    <path d="M452 150 C534 142 614 144 724 160" fill="none" stroke="#dbc59d" stroke-width="4" opacity="0.68"/>
+  </g>
+
+  <g transform="translate(1250 382)" opacity="0.82">
+    <rect x="0" y="0" width="108" height="132" rx="20" fill="#e6d6b2"/>
+    <path d="M0 20 C34 8 74 4 108 8" fill="none" stroke="#c0a574" stroke-width="4" opacity="0.62"/>
+    <rect x="-88" y="52" width="78" height="94" rx="16" fill="#d7c4a0" opacity="0.88"/>
+    <rect x="-76" y="62" width="54" height="5" rx="2.5" fill="#9d764c" opacity="0.8"/>
+    <rect x="-76" y="78" width="54" height="5" rx="2.5" fill="#9d764c" opacity="0.64"/>
+    <rect x="-76" y="94" width="54" height="5" rx="2.5" fill="#9d764c" opacity="0.48"/>
+  </g>
+
+  <g transform="translate(898 648)" opacity="0.9">
+    <path d="M0 164 C44 106 92 78 150 78 C188 78 220 92 250 126 L214 174 C188 152 168 144 146 144 C118 144 90 154 60 176 Z" fill="#5d3923"/>
+    <path d="M0 164 C54 118 102 96 146 96 C182 96 212 110 242 144" fill="none" stroke="#e5c281" stroke-width="10" stroke-linecap="round"/>
+    <path d="M118 26 C164 54 194 96 206 154" fill="none" stroke="#f6e4bb" stroke-width="14" stroke-linecap="round"/>
+    <path d="M214 154 L304 108" fill="none" stroke="#f6e4bb" stroke-width="12" stroke-linecap="round"/>
+  </g>
+
+  <g transform="translate(1090 680)" opacity="0.78">
+    <ellipse cx="0" cy="0" rx="66" ry="24" fill="#120c09" opacity="0.3"/>
+    <path d="M-42 -82 C-16 -112 22 -112 44 -82 L56 -10 C46 8 24 18 0 18 C-24 18 -46 8 -56 -10 Z" fill="#d8c2a0"/>
+    <path d="M-36 -70 C-12 -86 18 -86 36 -70" fill="none" stroke="#b19163" stroke-width="6" opacity="0.7"/>
+  </g>
+</svg>

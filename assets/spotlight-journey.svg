@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" role="img" aria-label="Journey study art">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f4d189"/>
+      <stop offset="58%" stop-color="#ab6a40"/>
+      <stop offset="100%" stop-color="#2f1f18"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="62%" cy="24%" r="34%">
+      <stop offset="0%" stop-color="#fff5c9"/>
+      <stop offset="100%" stop-color="#fff5c9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="900" height="620" fill="url(#sky)"/>
+  <rect width="900" height="620" fill="url(#sun)"/>
+  <path d="M0 418 C148 350 270 340 402 372 C584 416 730 410 900 354 L900 620 L0 620 Z" fill="#5e3927" opacity="0.75"/>
+  <path d="M0 488 C176 430 356 446 478 490 C644 550 770 516 900 452 L900 620 L0 620 Z" fill="#271912"/>
+  <path d="M452 620 C438 512 414 470 374 420 C334 368 266 320 168 262" fill="none" stroke="#c59054" stroke-width="34" stroke-linecap="round"/>
+  <g transform="translate(192 168)">
+    <path d="M114 0 C94 26 78 62 72 106 C56 126 48 154 48 204 L48 292 L180 292 L180 160 C180 80 152 26 114 0 Z" fill="#f0d6a5" opacity="0.94"/>
+    <path d="M70 118 C94 98 124 96 158 112 L174 288 L56 288 Z" fill="#c68d4e" opacity="0.92"/>
+    <rect x="108" y="98" width="12" height="222" rx="6" fill="#633d24"/>
+    <path d="M132 86 C150 116 150 136 132 158" fill="none" stroke="#633d24" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <g fill="#fff0cc" opacity="0.88">
+    <circle cx="690" cy="162" r="12"/>
+    <circle cx="728" cy="178" r="8"/>
+    <circle cx="760" cy="154" r="10"/>
+  </g>
+</svg>

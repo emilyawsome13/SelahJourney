@@ -1,0 +1,15 @@
+{
+  "name": "selah-journey",
+  "version": "0.7.0",
+  "private": true,
+  "description": "Selah Journey Bible reading and study app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js 4173 127.0.0.1",
+    "check": "node --check server.js && node --check app.js && node --check library-data.js && node --check study-data.js"
+  },
+  "engines": {
+    "node": ">=20 <23"
+  }
+}
