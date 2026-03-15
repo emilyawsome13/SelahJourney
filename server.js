@@ -1705,25 +1705,30 @@ function requestJson(method, targetUrl, headers, body) {
 
 function resolveOAuthRedirectUri(request) {
   const requestOrigin = getRequestOrigin(request);
+  const requestRedirectUri = requestOrigin
+    ? `${requestOrigin}/auth/google/callback`
+    : "";
   if (CONFIG.googleRedirectUri) {
     try {
       const configuredRedirect = new URL(CONFIG.googleRedirectUri);
       if (requestOrigin) {
-        const requestHost = new URL(requestOrigin).host;
-        if (!isLocalHost(requestHost) && isLocalHost(configuredRedirect.host)) {
-          return `${requestOrigin}/auth/google/callback`;
+        const requestUrl = new URL(requestOrigin);
+        const configuredMatchesRequest = configuredRedirect.origin === requestUrl.origin
+          && configuredRedirect.pathname === "/auth/google/callback";
+        if (!configuredMatchesRequest) {
+          return requestRedirectUri;
         }
       }
       return configuredRedirect.toString();
     } catch (error) {
-      if (requestOrigin) {
-        return `${requestOrigin}/auth/google/callback`;
+      if (requestRedirectUri) {
+        return requestRedirectUri;
       }
       return `${APP_ORIGIN}/auth/google/callback`;
     }
   }
-  if (requestOrigin) {
-    return `${requestOrigin}/auth/google/callback`;
+  if (requestRedirectUri) {
+    return requestRedirectUri;
   }
   return `${APP_ORIGIN}/auth/google/callback`;
 }
