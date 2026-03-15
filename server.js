@@ -1704,10 +1704,24 @@ function requestJson(method, targetUrl, headers, body) {
 }
 
 function resolveOAuthRedirectUri(request) {
-  if (CONFIG.googleRedirectUri) {
-    return CONFIG.googleRedirectUri;
-  }
   const requestOrigin = getRequestOrigin(request);
+  if (CONFIG.googleRedirectUri) {
+    try {
+      const configuredRedirect = new URL(CONFIG.googleRedirectUri);
+      if (requestOrigin) {
+        const requestHost = new URL(requestOrigin).host;
+        if (!isLocalHost(requestHost) && isLocalHost(configuredRedirect.host)) {
+          return `${requestOrigin}/auth/google/callback`;
+        }
+      }
+      return configuredRedirect.toString();
+    } catch (error) {
+      if (requestOrigin) {
+        return `${requestOrigin}/auth/google/callback`;
+      }
+      return `${APP_ORIGIN}/auth/google/callback`;
+    }
+  }
   if (requestOrigin) {
     return `${requestOrigin}/auth/google/callback`;
   }
@@ -1805,19 +1819,12 @@ function getGoogleConfigIssue(request) {
 
   const requestOrigin = getRequestOrigin(request);
   if (requestOrigin) {
-    const requestHost = new URL(requestOrigin).host;
     if (CONFIG.googleRedirectUri) {
       try {
-        const redirectHost = new URL(CONFIG.googleRedirectUri).host;
-        if (!isLocalHost(requestHost) && isLocalHost(redirectHost)) {
-          return "GOOGLE_REDIRECT_URI still points to localhost. Set it to your deployed Render callback URL.";
-        }
+        new URL(CONFIG.googleRedirectUri);
       } catch (error) {
         return "GOOGLE_REDIRECT_URI is not a valid URL.";
       }
-    }
-    if (!isLocalHost(requestHost) && !CONFIG.googleRedirectUri) {
-      return "Set GOOGLE_REDIRECT_URI to your deployed Render callback URL to enable Google sign-in.";
     }
   }
 
