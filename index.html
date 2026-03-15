@@ -592,13 +592,13 @@
               <div id="authSignedOut" class="tool-card">
                 <div class="results-header">
                   <h3>Sign In Or Create An Account</h3>
-                  <span class="mini-meta">Google auth + Gmail signup</span>
+                  <span class="mini-meta">Google auth + email signup</span>
                 </div>
                 <div class="account-auth-grid">
                   <div class="auth-surface">
                     <div class="panel-kicker">Google</div>
                     <h4>Continue with Google</h4>
-                    <p class="muted-copy">Use Google OAuth for one-click sign-in, then finish website verification with the Gmail code we send on first access.</p>
+                    <p class="muted-copy">Use Google OAuth for one-click sign-in, then finish website verification with the email code we send on first access.</p>
                     <a id="googleAuthButton" class="hero-button auth-link-button" href="/auth/google/start">Sign in with Google</a>
                     <div id="googleAuthMeta" class="mini-meta">Waiting for Google setup</div>
                   </div>
@@ -624,7 +624,7 @@
                 <div id="accountSecurityCard"></div>
                 <div class="panel-kicker">Password Reset</div>
                 <h4>Send a reset email</h4>
-                <p class="muted-copy">Use your Gmail sender configuration to deliver a password reset link for any existing account.</p>
+                <p class="muted-copy">Use your configured email delivery provider to send a password reset link for any existing account.</p>
                 <form id="accountResetRequestForm" class="account-form">
                   <label class="field">
                     <span>Email</span>
@@ -635,9 +635,9 @@
               </div>
 
               <div class="auth-surface auth-surface-signup">
-                  <div class="panel-kicker">Gmail Signup</div>
+                  <div class="panel-kicker">Email Signup</div>
                   <h4>Create an account with email</h4>
-                  <p class="muted-copy">New accounts use email + password, then complete website verification with a Gmail code or verification link.</p>
+                  <p class="muted-copy">New accounts use email + password, then complete website verification with an email code or verification link.</p>
                   <form id="accountSignupForm" class="account-form account-form-wide">
                     <label class="field">
                       <span>Display name</span>
@@ -653,7 +653,7 @@
                     </label>
                     <button type="submit" class="hero-button">Create account</button>
                   </form>
-                  <div id="gmailSignupMeta" class="mini-meta">Waiting for Gmail setup</div>
+                  <div id="gmailSignupMeta" class="mini-meta">Waiting for email delivery setup</div>
                 </div>
 
                 <div id="accountResetTokenSurface" class="auth-surface auth-surface-signup is-hidden">
@@ -677,9 +677,9 @@
             <div id="accountVerificationCard" class="tool-card is-hidden">
               <div class="results-header">
                 <h3>Website Verification</h3>
-                <span class="mini-meta">Gmail code + link</span>
+                <span class="mini-meta">Email code + link</span>
               </div>
-              <p id="accountVerificationMeta" class="muted-copy">After Google or email sign-in, the Gmail verification step appears here when needed.</p>
+              <p id="accountVerificationMeta" class="muted-copy">After Google or email sign-in, the email verification step appears here when needed.</p>
               <form id="accountVerificationForm" class="account-form account-form-verify">
                 <label class="field">
                   <span>Email</span>
@@ -805,14 +805,14 @@
                   <input id="accountEmailNotifications" type="checkbox">
                   <span>Allow email notifications for study reminders and account alerts.</span>
                 </label>
-                <div class="settings-subhead">Gmail Preferences</div>
+                  <div class="settings-subhead">Email Preferences</div>
                 <label class="check-field">
                   <input id="accountWelcomeEmails" type="checkbox">
                   <span>Send a welcome email after I finish verification.</span>
                 </label>
                 <label class="check-field">
                   <input id="accountSecurityEmails" type="checkbox">
-                  <span>Send Gmail security notices for password changes and important account updates.</span>
+                    <span>Send email security notices for password changes and important account updates.</span>
                 </label>
                 <label class="check-field">
                   <input id="accountStudyEmails" type="checkbox">
@@ -1064,7 +1064,7 @@
                 </button>
                 <button type="button" class="account-action-tile" id="moreOpenVerificationButton">
                   <strong>Verification</strong>
-                  <span>Jump to the Gmail code verification section.</span>
+                  <span>Jump to the email code verification section.</span>
                 </button>
                 <button type="button" class="account-action-tile" id="moreOpenNotificationsButton">
                   <strong>Notifications</strong>

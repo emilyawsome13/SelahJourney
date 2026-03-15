@@ -48,6 +48,8 @@ Render-specific behavior:
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
 - `GOOGLE_REDIRECT_URI`
+- `RESEND_API_KEY`
+- `RESEND_FROM`
 - `GMAIL_SMTP_EMAIL`
 - `GMAIL_SMTP_APP_PASSWORD`
 - `MAIL_FROM`
@@ -71,6 +73,7 @@ Then set `GOOGLE_REDIRECT_URI` to the same exact URL in Render.
 
 ## Notes
 
+- Render commonly blocks direct SMTP delivery. For hosted verification emails, prefer `RESEND_API_KEY` plus `RESEND_FROM` over Gmail SMTP.
 - Text-to-speech uses the browser Web Speech API, so voice quality depends on the browser and device.
 - Most reader state remains in browser local storage unless the user signs in and syncs.
 - Runtime files like logs, pid files, and local user data are ignored by Git.

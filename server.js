@@ -58,6 +58,8 @@ const CONFIG = {
   googleClientId: process.env.GOOGLE_CLIENT_ID || env.GOOGLE_CLIENT_ID || "",
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || env.GOOGLE_CLIENT_SECRET || "",
   googleRedirectUri: process.env.GOOGLE_REDIRECT_URI || env.GOOGLE_REDIRECT_URI || "",
+  resendApiKey: process.env.RESEND_API_KEY || env.RESEND_API_KEY || "",
+  resendFrom: process.env.RESEND_FROM || env.RESEND_FROM || "",
   gmailEmail: process.env.GMAIL_SMTP_EMAIL || env.GMAIL_SMTP_EMAIL || "",
   gmailAppPassword: process.env.GMAIL_SMTP_APP_PASSWORD || env.GMAIL_SMTP_APP_PASSWORD || "",
   mailFrom: process.env.MAIL_FROM || env.MAIL_FROM || process.env.GMAIL_SMTP_EMAIL || env.GMAIL_SMTP_EMAIL || ""
@@ -96,7 +98,7 @@ const server = http.createServer(async (request, response) => {
 server.listen(port, BIND_HOST, () => {
   console.log(`Serving ${root} at ${APP_ORIGIN} (bound to ${BIND_HOST}:${port})`);
   console.log(`Google OAuth: ${CONFIG.googleClientId && CONFIG.googleClientSecret ? "configured" : "not configured"}`);
-  console.log(`Gmail signup email: ${CONFIG.gmailEmail && CONFIG.gmailAppPassword ? "configured" : "not configured"}`);
+  console.log(`Email delivery: ${getEmailDeliveryMode() || "not configured"}`);
 });
 
 async function handleApiRequest(request, response, requestUrl) {
@@ -170,8 +172,8 @@ async function handleApiRequest(request, response, requestUrl) {
       verificationRequired: true,
       verificationEmail: user.email,
       message: mailResult.sent
-        ? "Account created. Enter the 6-digit Gmail code on the website or use the email link to verify the account."
-        : "Account created, but the verification email could not be sent because Gmail SMTP is not fully configured.",
+        ? "Account created. Enter the 6-digit email code on the website or use the verification link from your inbox."
+        : "Account created, but the verification email could not be sent because email delivery is not configured correctly.",
       mailResult
     }, {
       "Set-Cookie": createSessionCookie(user.id)
@@ -233,8 +235,8 @@ async function handleApiRequest(request, response, requestUrl) {
       verificationRequired = true;
       mailResult = await issueVerificationChallenge(store, user);
       message = mailResult.sent
-        ? "Signed in. Enter the Gmail verification code on the website to finish verifying this account."
-        : "Signed in, but the verification email could not be sent because Gmail SMTP is not fully configured.";
+        ? "Signed in. Enter the email verification code on the website to finish verifying this account."
+        : "Signed in, but the verification email could not be sent because email delivery is not configured correctly.";
     }
 
     sendJson(response, 200, {
@@ -337,8 +339,8 @@ async function handleApiRequest(request, response, requestUrl) {
       verificationRequired: true,
       verificationEmail: user.email,
       message: mailResult.sent
-        ? "Verification email sent. Enter the code on the website or use the link in Gmail."
-        : "Verification email could not be sent because Gmail SMTP is not fully configured.",
+        ? "Verification email sent. Enter the code on the website or use the link from your inbox."
+        : "Verification email could not be sent because email delivery is not configured correctly.",
       mailResult
     });
     return true;
@@ -456,7 +458,7 @@ async function handleApiRequest(request, response, requestUrl) {
       mailResult,
       message: mailResult.sent
         ? "Test email notification sent."
-        : "Test email could not be sent because Gmail SMTP is not fully configured."
+        : "Test email could not be sent because email delivery is not configured correctly."
     });
     return true;
   }
@@ -733,8 +735,8 @@ async function handleAuthRoute(request, response, requestUrl) {
     if (!user.emailVerified) {
       const mailResult = await issueVerificationChallenge(store, user);
       authMessage = mailResult.sent
-        ? "Google connected. Enter the 6-digit Gmail code on the website to finish verification."
-        : "Google connected, but the Gmail verification message could not be sent because Gmail SMTP is not fully configured.";
+        ? "Google connected. Enter the 6-digit email code on the website to finish verification."
+        : "Google connected, but the verification email could not be sent because email delivery is not configured correctly.";
       redirectTarget = `/?panel=account&verify_email=${encodeURIComponent(user.email)}&auth_message=${encodeURIComponent(authMessage)}`;
     } else {
       saveUsersStore(store);
@@ -1335,16 +1337,31 @@ async function sendSecurityNoticeEmail(user, options) {
 }
 
 async function sendAccountEmail(user, content, warningLabel) {
-  if (!CONFIG.gmailEmail || !CONFIG.gmailAppPassword || !CONFIG.mailFrom) {
+  if (!hasEmailDeliveryConfig()) {
     return {
       sent: false,
-      reason: "gmail_not_configured"
+      reason: "email_not_configured"
     };
   }
 
   const compiled = buildAccountEmailContent(user, content);
 
   try {
+    if (hasResendConfig()) {
+      await sendResendMail({
+        from: CONFIG.resendFrom || CONFIG.mailFrom,
+        to: user.email,
+        subject: content.subject,
+        text: compiled.text,
+        html: compiled.html
+      });
+
+      return {
+        sent: true,
+        reason: "resend_api"
+      };
+    }
+
     await sendSmtpMail({
       host: "smtp.gmail.com",
       port: 465,
@@ -1365,8 +1382,26 @@ async function sendAccountEmail(user, content, warningLabel) {
     console.warn(warningLabel, error.message || error);
     return {
       sent: false,
-      reason: "gmail_delivery_failed"
+      reason: hasResendConfig() ? "resend_delivery_failed" : "smtp_delivery_failed"
     };
+  }
+}
+
+async function sendResendMail(options) {
+  const response = await requestJson("POST", "https://api.resend.com/emails", {
+    Authorization: `Bearer ${CONFIG.resendApiKey}`,
+    "Content-Type": "application/json"
+  }, JSON.stringify({
+    from: options.from,
+    to: [options.to],
+    subject: options.subject,
+    text: options.text || "",
+    html: options.html || ""
+  }));
+
+  if (!response.ok || !response.body?.id) {
+    const reason = response.body?.message || response.body?.name || response.body?.error || `HTTP ${response.statusCode}`;
+    throw new Error(`Resend API rejected the email: ${reason}`);
   }
 }
 
@@ -1804,7 +1839,7 @@ function getPublicConfig(request) {
     appOrigin: getDisplayOrigin(request),
     googleEnabled: !googleIssue,
     googleIssue,
-    gmailEnabled: Boolean(CONFIG.gmailEmail && CONFIG.gmailAppPassword),
+    gmailEnabled: hasEmailDeliveryConfig(),
     googleAuthUrl: "/auth/google/start"
   };
 }
@@ -1842,6 +1877,28 @@ function shouldUseSecureCookies() {
   } catch (error) {
     return false;
   }
+}
+
+function hasResendConfig() {
+  return Boolean(CONFIG.resendApiKey && (CONFIG.resendFrom || CONFIG.mailFrom));
+}
+
+function hasSmtpConfig() {
+  return Boolean(CONFIG.gmailEmail && CONFIG.gmailAppPassword && CONFIG.mailFrom);
+}
+
+function hasEmailDeliveryConfig() {
+  return hasResendConfig() || hasSmtpConfig();
+}
+
+function getEmailDeliveryMode() {
+  if (hasResendConfig()) {
+    return "resend-api";
+  }
+  if (hasSmtpConfig()) {
+    return "gmail-smtp";
+  }
+  return "";
 }
 
 function loadEnvFile(filePath) {

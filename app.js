@@ -2358,7 +2358,7 @@ function renderAccount() {
 
   els.accountStatus.textContent = signedIn
     ? (user.emailVerified ? "Signed in" : "Verify email")
-    : (needsVerification ? "Check Gmail" : "Guest mode");
+    : (needsVerification ? "Check email" : "Guest mode");
   els.accountSyncBadge.textContent = signedIn ? "Cloud available" : "Local only";
   els.accountVerifiedBadge.textContent = signedIn
     ? (user.emailVerified ? "Email verified" : "Website verification pending")
@@ -2382,22 +2382,22 @@ function renderAccount() {
   els.accountCornerLabel.textContent = signedIn ? "My Account" : "Account";
   els.accountCornerMeta.textContent = signedIn
     ? (user.emailVerified ? "Cloud ready" : "Verify email")
-    : (needsVerification ? "Check Gmail" : "Guest mode");
+    : (needsVerification ? "Check email" : "Guest mode");
 
   els.googleAuthButton.href = config.googleEnabled ? (config.googleAuthUrl || "/auth/google/start") : "#";
   els.googleAuthButton.classList.toggle("is-disabled", !config.googleEnabled);
   els.googleAuthMeta.textContent = config.googleEnabled
-    ? "Google sign-in is ready and first-time access finishes with a Gmail verification code on the website."
+    ? "Google sign-in is ready and first-time access finishes with an email verification code on the website."
     : (config.googleIssue || "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env to enable Google sign-in.");
   els.gmailSignupMeta.textContent = config.gmailEnabled
-    ? "Email accounts use Gmail verification and can also verify directly on this page with a code."
-    : "Add GMAIL_SMTP_EMAIL and GMAIL_SMTP_APP_PASSWORD to .env to send verification emails.";
+    ? "Email accounts can verify directly on this page with a code or by opening the link in the message."
+    : "Add an email delivery provider so verification emails can be sent.";
   els.resetTokenMeta.textContent = state.account.resetToken
     ? "Your reset token is loaded. Set a new password to finish the reset."
     : "Password reset links open here when you follow the email.";
   els.accountVerificationMeta.textContent = needsVerification
-    ? `We sent a 6-digit code to ${pendingVerificationEmail || "your email"}. Enter it here or use the verification link from Gmail.`
-    : "After Google or email sign-in, the Gmail verification step appears here when needed.";
+    ? `We sent a 6-digit code to ${pendingVerificationEmail || "your email"}. Enter it here or use the verification link from your inbox.`
+    : "After Google or email sign-in, the email verification step appears here when needed.";
   els.accountVerificationEmail.value = pendingVerificationEmail;
 
   els.accountDisplayName.value = signedIn ? user.displayName : "";
@@ -2489,9 +2489,9 @@ function renderAccount() {
   setAccountMessage(state.account.message || (signedIn
     ? (user.emailVerified
       ? "Your account can sync study notes, bookmarks, and the Study Desk."
-      : "Finish website verification with the Gmail code to complete this account.")
+      : "Finish website verification with the email code to complete this account.")
     : (needsVerification
-      ? "Enter the Gmail code on this page to complete verification."
+      ? "Enter the email code on this page to complete verification."
       : "Theme, dark mode, text size, motion, reader width, verse numbers, and launch preferences can be saved locally here. Sign in to sync notes and settings across sessions.")));
 }
 
@@ -2728,7 +2728,7 @@ async function verifyAccountCode() {
   if (!finishAccountValidation([
     !email ? markFieldInvalid(els.accountVerificationEmail, "Enter the email address that received the code.") : null,
     email && !isClientEmailValid(email) ? markFieldInvalid(els.accountVerificationEmail, "Enter a valid email address.") : null,
-    !code ? markFieldInvalid(els.accountVerificationCode, "Enter the 6-digit code from Gmail.") : null,
+    !code ? markFieldInvalid(els.accountVerificationCode, "Enter the 6-digit code from your email.") : null,
     code && !isVerificationCodeValid(code) ? markFieldInvalid(els.accountVerificationCode, "Verification codes must be exactly 6 digits.") : null
   ])) {
     return;
