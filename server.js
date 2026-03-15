@@ -171,9 +171,10 @@ async function handleApiRequest(request, response, requestUrl) {
       config: getPublicConfig(request),
       verificationRequired: true,
       verificationEmail: user.email,
+      fallbackVerificationCode: mailResult.verificationCode || "",
       message: mailResult.sent
         ? "Account created. Enter the 6-digit email code on the website or use the verification link from your inbox."
-        : "Account created, but the verification email could not be sent because email delivery is not configured correctly.",
+        : `Account created. Email delivery failed, so use the code shown on the website: ${mailResult.verificationCode}`,
       mailResult
     }, {
       "Set-Cookie": createSessionCookie(user.id)
@@ -236,7 +237,7 @@ async function handleApiRequest(request, response, requestUrl) {
       mailResult = await issueVerificationChallenge(store, user);
       message = mailResult.sent
         ? "Signed in. Enter the email verification code on the website to finish verifying this account."
-        : "Signed in, but the verification email could not be sent because email delivery is not configured correctly.";
+        : `Signed in. Email delivery failed, so use the website code shown now: ${mailResult.verificationCode}`;
     }
 
     sendJson(response, 200, {
@@ -244,6 +245,7 @@ async function handleApiRequest(request, response, requestUrl) {
       config: getPublicConfig(request),
       verificationRequired,
       verificationEmail: verificationRequired ? user.email : "",
+      fallbackVerificationCode: mailResult?.verificationCode || "",
       mailResult,
       message
     }, {
@@ -338,9 +340,10 @@ async function handleApiRequest(request, response, requestUrl) {
       ok: true,
       verificationRequired: true,
       verificationEmail: user.email,
+      fallbackVerificationCode: mailResult.verificationCode || "",
       message: mailResult.sent
         ? "Verification email sent. Enter the code on the website or use the link from your inbox."
-        : "Verification email could not be sent because email delivery is not configured correctly.",
+        : `Verification email could not be sent. Use this website code instead: ${mailResult.verificationCode}`,
       mailResult
     });
     return true;
@@ -736,8 +739,8 @@ async function handleAuthRoute(request, response, requestUrl) {
       const mailResult = await issueVerificationChallenge(store, user);
       authMessage = mailResult.sent
         ? "Google connected. Enter the 6-digit email code on the website to finish verification."
-        : "Google connected, but the verification email could not be sent because email delivery is not configured correctly.";
-      redirectTarget = `/?panel=account&verify_email=${encodeURIComponent(user.email)}&auth_message=${encodeURIComponent(authMessage)}`;
+        : `Google connected. Email delivery failed, so use the website code shown now: ${mailResult.verificationCode}`;
+      redirectTarget = `/?panel=account&verify_email=${encodeURIComponent(user.email)}${mailResult.verificationCode ? `&verify_code=${encodeURIComponent(mailResult.verificationCode)}` : ""}&auth_message=${encodeURIComponent(authMessage)}`;
     } else {
       saveUsersStore(store);
     }
@@ -1252,7 +1255,11 @@ async function issueVerificationChallenge(store, user) {
   user.verification = verification.record;
   user.updatedAt = new Date().toISOString();
   saveUsersStore(store);
-  return sendVerificationEmail(user, verification);
+  const mailResult = await sendVerificationEmail(user, verification);
+  return {
+    ...mailResult,
+    verificationCode: mailResult.sent ? "" : verification.code
+  };
 }
 
 async function maybeSendWelcomeEmail(store, user) {

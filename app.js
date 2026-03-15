@@ -179,7 +179,8 @@ const state = {
     activeModal: "",
     message: "",
     resetToken: "",
-    pendingVerificationEmail: ""
+    pendingVerificationEmail: "",
+    inlineVerificationCode: ""
   }
 };
 
@@ -2330,6 +2331,7 @@ function renderAccount() {
   const signedIn = Boolean(user);
   const pendingVerificationEmail = state.account.pendingVerificationEmail || ((signedIn && !user.emailVerified) ? user.email : "");
   const needsVerification = Boolean(pendingVerificationEmail || (signedIn && !user.emailVerified));
+  const inlineVerificationCode = state.account.inlineVerificationCode;
   const settings = user?.settings || {
     defaultPanel: getDefaultPanelSetting(),
     readingLanguage: getReadingLanguageSetting(),
@@ -2396,9 +2398,16 @@ function renderAccount() {
     ? "Your reset token is loaded. Set a new password to finish the reset."
     : "Password reset links open here when you follow the email.";
   els.accountVerificationMeta.textContent = needsVerification
-    ? `We sent a 6-digit code to ${pendingVerificationEmail || "your email"}. Enter it here or use the verification link from your inbox.`
+    ? (inlineVerificationCode
+        ? `Email delivery is unavailable right now. Use this 6-digit website code instead: ${inlineVerificationCode}`
+        : `We sent a 6-digit code to ${pendingVerificationEmail || "your email"}. Enter it here or use the verification link from your inbox.`)
     : "After Google or email sign-in, the email verification step appears here when needed.";
   els.accountVerificationEmail.value = pendingVerificationEmail;
+  if (inlineVerificationCode) {
+    els.accountVerificationCode.value = inlineVerificationCode;
+  } else if (!needsVerification) {
+    els.accountVerificationCode.value = "";
+  }
 
   els.accountDisplayName.value = signedIn ? user.displayName : "";
   els.accountEmail.value = signedIn ? user.email : "";
@@ -2567,6 +2576,12 @@ function isVerificationCodeValid(value) {
   return /^\d{6}$/.test(String(value || "").trim());
 }
 
+function storeInlineVerificationCode(value) {
+  state.account.inlineVerificationCode = /^\d{6}$/.test(String(value || "").trim())
+    ? String(value || "").trim()
+    : "";
+}
+
 function hydrateDeskInputs() {
   els.deskStudyTitle.value = state.studyDesk.title || "";
   els.deskQuestions.value = state.studyDesk.questions || "";
@@ -2578,6 +2593,7 @@ async function loadAccountSession() {
   try {
     const resetToken = consumeResetToken();
     const verificationEmail = consumeVerificationEmail();
+    const verificationCode = consumeVerificationCode();
     const flashMessage = consumeAuthMessage();
     let data = await requestApi("/api/auth/session", { cacheBust: true });
     state.account.config = { ...DEFAULT_ACCOUNT_CONFIG, ...(data.config || {}) };
@@ -2585,6 +2601,9 @@ async function loadAccountSession() {
     state.account.user = data.user || null;
     if (verificationEmail) {
       state.account.pendingVerificationEmail = verificationEmail;
+    }
+    if (verificationCode) {
+      storeInlineVerificationCode(verificationCode);
     }
     if (resetToken) {
       state.account.resetToken = resetToken;
@@ -2605,6 +2624,7 @@ async function loadAccountSession() {
 
     if (state.account.user?.emailVerified) {
       state.account.pendingVerificationEmail = "";
+      storeInlineVerificationCode("");
     } else if (state.account.user?.email) {
       state.account.pendingVerificationEmail = state.account.pendingVerificationEmail || state.account.user.email;
     }
@@ -2648,6 +2668,7 @@ async function signInWithEmail() {
     state.account.user = data.user || null;
     state.account.config = { ...state.account.config, ...(data.config || {}) };
     state.account.pendingVerificationEmail = data.verificationRequired ? (data.verificationEmail || email) : "";
+    storeInlineVerificationCode(data.fallbackVerificationCode || "");
     els.loginPassword.value = "";
     if (state.account.user?.settings) {
       applyReaderSettings(state.account.user.settings);
@@ -2696,6 +2717,7 @@ async function signUpWithEmail() {
     state.account.user = data.user || null;
     state.account.config = { ...state.account.config, ...(data.config || {}) };
     state.account.pendingVerificationEmail = data.verificationEmail || email;
+    storeInlineVerificationCode(data.fallbackVerificationCode || "");
     els.signupPassword.value = "";
     if (state.account.user?.settings) {
       applyReaderSettings(state.account.user.settings);
@@ -2745,6 +2767,7 @@ async function verifyAccountCode() {
     state.account.user = data.user || state.account.user;
     state.account.config = { ...state.account.config, ...(data.config || {}) };
     state.account.pendingVerificationEmail = "";
+    storeInlineVerificationCode("");
     els.accountVerificationCode.value = "";
     if (state.account.user?.settings) {
       applyReaderSettings(state.account.user.settings);
@@ -2821,6 +2844,9 @@ async function completePasswordReset() {
       await applyLanguageSetting(state.account.user.settings.readingLanguage || getReadingLanguageSetting());
     }
     state.account.pendingVerificationEmail = state.account.user?.emailVerified ? "" : (state.account.user?.email || state.account.pendingVerificationEmail);
+    if (state.account.user?.emailVerified) {
+      storeInlineVerificationCode("");
+    }
     state.account.resetToken = "";
     els.accountResetPassword.value = "";
     els.accountResetPasswordConfirm.value = "";
@@ -2971,6 +2997,7 @@ async function deleteAccount() {
     closeAccountModal();
     state.account.user = null;
     state.account.pendingVerificationEmail = "";
+    storeInlineVerificationCode("");
     els.accountDeleteConfirm.value = "";
     setAccountMessage(data.message || "Account deleted. Local study data on this device was left intact.");
     pushNotification({
@@ -2994,6 +3021,7 @@ async function signOutAccount() {
   closeAccountModal();
   state.account.user = null;
   state.account.pendingVerificationEmail = "";
+  storeInlineVerificationCode("");
   state.account.message = "Signed out. Your local study data is still on this device.";
   renderAccount();
 }
@@ -3014,6 +3042,7 @@ async function resendVerificationEmail() {
       body: email ? { email } : {}
     });
     state.account.pendingVerificationEmail = data.verificationEmail || email || state.account.pendingVerificationEmail;
+    storeInlineVerificationCode(data.fallbackVerificationCode || "");
     state.account.message = data.message || "Verification email sent.";
     renderAccount();
   } catch (error) {
@@ -5365,4 +5394,18 @@ function consumeVerificationEmail() {
   const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`;
   window.history.replaceState({}, "", nextUrl);
   return email;
+}
+
+function consumeVerificationCode() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("verify_code");
+  if (!code) {
+    return "";
+  }
+
+  params.delete("verify_code");
+  const nextQuery = params.toString();
+  const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`;
+  window.history.replaceState({}, "", nextUrl);
+  return String(code || "").replace(/\D/g, "").slice(0, 6);
 }
