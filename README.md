@@ -74,6 +74,7 @@ Then set `GOOGLE_REDIRECT_URI` to the same exact URL in Render.
 ## Notes
 
 - Render commonly blocks direct SMTP delivery. For hosted verification emails, prefer `RESEND_API_KEY` plus `RESEND_FROM` over Gmail SMTP.
+- `RESEND_FROM` cannot be a Gmail address when you use Resend. Use `Selah Journey <onboarding@resend.dev>` for testing with your own Resend account email, or use a verified custom-domain sender for real delivery.
 - Text-to-speech uses the browser Web Speech API, so voice quality depends on the browser and device.
 - Most reader state remains in browser local storage unless the user signs in and syncs.
 - Runtime files like logs, pid files, and local user data are ignored by Git.
