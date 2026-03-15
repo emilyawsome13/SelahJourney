@@ -1806,6 +1806,16 @@ function getGoogleConfigIssue(request) {
   const requestOrigin = getRequestOrigin(request);
   if (requestOrigin) {
     const requestHost = new URL(requestOrigin).host;
+    if (CONFIG.googleRedirectUri) {
+      try {
+        const redirectHost = new URL(CONFIG.googleRedirectUri).host;
+        if (!isLocalHost(requestHost) && isLocalHost(redirectHost)) {
+          return "GOOGLE_REDIRECT_URI still points to localhost. Set it to your deployed Render callback URL.";
+        }
+      } catch (error) {
+        return "GOOGLE_REDIRECT_URI is not a valid URL.";
+      }
+    }
     if (!isLocalHost(requestHost) && !CONFIG.googleRedirectUri) {
       return "Set GOOGLE_REDIRECT_URI to your deployed Render callback URL to enable Google sign-in.";
     }
