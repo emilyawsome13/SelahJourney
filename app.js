@@ -187,10 +187,12 @@ const state = {
 const els = {};
 let activeSpeechSessionId = 0;
 let speechPlaybackActive = false;
+let responsiveLayoutObserver = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   cacheDom();
   bindEvents();
+  initializeResponsiveLayout();
   initialize().catch((error) => {
     console.error(error);
     setReaderStatus("Unable to initialize the app. Check the local server and API access.");
@@ -1059,6 +1061,40 @@ function bindEvents() {
   els.accountVerificationCode.addEventListener("input", () => {
     els.accountVerificationCode.value = els.accountVerificationCode.value.replace(/\D/g, "").slice(0, 6);
   });
+}
+
+function initializeResponsiveLayout() {
+  syncResponsiveLayout();
+  window.addEventListener("resize", syncResponsiveLayout, { passive: true });
+  window.visualViewport?.addEventListener("resize", syncResponsiveLayout);
+
+  if (typeof ResizeObserver === "undefined") {
+    return;
+  }
+
+  responsiveLayoutObserver = new ResizeObserver(() => {
+    syncResponsiveLayout();
+  });
+
+  [document.querySelector(".app-topbar"), document.querySelector(".focus-nav")].forEach((element) => {
+    if (element) {
+      responsiveLayoutObserver.observe(element);
+    }
+  });
+}
+
+function syncResponsiveLayout() {
+  const root = document.documentElement;
+  const topbar = document.querySelector(".app-topbar");
+  const focusNav = document.querySelector(".focus-nav");
+  const topbarHeight = topbar?.offsetHeight || 62;
+  const focusNavTop = topbarHeight + 26;
+  const focusNavHeight = focusNav && getComputedStyle(focusNav).display !== "none" ? focusNav.offsetHeight : 0;
+  const sectionOffset = focusNavTop + focusNavHeight + 24;
+
+  root.style.setProperty("--topbar-offset", `${topbarHeight}px`);
+  root.style.setProperty("--focus-nav-top", `${focusNavTop}px`);
+  root.style.setProperty("--section-scroll-offset", `${sectionOffset}px`);
 }
 
 async function loadTranslations() {
@@ -4101,6 +4137,8 @@ function switchPanel(panelName) {
   document.querySelectorAll(".nav-chip").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.navTarget === nextPanel);
   });
+  syncResponsiveLayout();
+  keepActiveNavChipVisible();
 
   if (isHome) {
     window.scrollTo({ top: 0, behavior: getScrollBehavior() });
@@ -4126,6 +4164,20 @@ function switchPanel(panelName) {
   }
 
   window.scrollTo({ top: 0, behavior: getScrollBehavior() });
+}
+
+function keepActiveNavChipVisible() {
+  document.querySelectorAll(".top-nav .nav-chip.is-active, .focus-nav .nav-chip.is-active").forEach((button) => {
+    if (!button.offsetParent) {
+      return;
+    }
+
+    button.scrollIntoView({
+      behavior: getScrollBehavior(),
+      block: "nearest",
+      inline: "nearest"
+    });
+  });
 }
 
 function jumpToAccountCard(cardId) {
